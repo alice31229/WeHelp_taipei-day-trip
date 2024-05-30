@@ -27,6 +27,7 @@ async def thankyou(request: Request):
 import os
 import math
 import json
+import uvicorn
 import mysql.connector
 
 # MySQL settings
@@ -266,3 +267,6 @@ async def get_mrt_info(request: Request):
 
 		con.close()
 		Cursor.close()
+
+if __name__ == '__main__':
+    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
