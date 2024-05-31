@@ -47,11 +47,14 @@ def get_12_attractions_by_keyword(kw, page=0):
 	# sql = "SELECT * FROM attractions WHERE name like %s OR description like %s;"
 
 	# 用來完全比對捷運站名稱、或模糊比對景點名稱的關鍵字，沒有給定則不做篩選
-	sql = "SELECT * FROM attractions WHERE name like %s OR mrt = %s;"
+	sql = "SELECT * FROM (SELECT * FROM attractions WHERE name like %s OR mrt = %s) AS subquery LIMIT %s, %s;"
+
+	page_size = 24 # judge the nextPage
+	start = page * 12
 
 	# Escaping wildcards in the parameter
 	search_param = f"%{kw}%"
-	keyword = (search_param, kw)
+	keyword = (search_param, kw, start, page_size)
 
 	try:
 		
@@ -59,48 +62,27 @@ def get_12_attractions_by_keyword(kw, page=0):
 		Cursor = con.cursor(dictionary=True)
 		Cursor.execute(sql, keyword)
 		query_result_raw = Cursor.fetchall()
-		total = len(query_result_raw)
+		next_page_judge = len(query_result_raw)
 
 		query_result = []
 		for image_datatype in query_result_raw:
 			image_datatype['images'] = json.loads(image_datatype['images'])
 			query_result.append(image_datatype)
 
-		if total <= 12:
+		if next_page_judge < 13 and next_page_judge > 0:
 
-			if page == 0:
-
-				return {'nextPage': None,
-						'data': query_result}
-			
-			else:
-
-				return {'error': True,
-						'message': '景點資料超出頁數'}
+			return {'nextPage': None,
+					'data': query_result[:next_page_judge]}
 		
+		elif next_page_judge > 12:
+
+			return {'nextPage': page+1,
+					'data': query_result[:12]}
+
 		else:
 
-			if page == 0:
-
-				return {'nextPage': 1,
-						'data': query_result[:12]}
-			
-			elif page > 0 and page <= math.ceil(total / 12) - 1: 
-
-				if page != math.ceil(total / 12) - 1:
-
-					return {'nextPage': page+1,
-			 				'data': query_result[12*page:12*(page+1)]}
-
-				else:
-
-					return {'nextPage': None,
-			 				'data': query_result[12*page:]}
-				
-			else:
-
-				return {'error': True,
-						'message': '景點資料超出頁數'}
+			return {'error': True,
+					'message': '景點資料超出頁數'}
 
 
 	except mysql.connector.Error as err:
@@ -118,38 +100,31 @@ def get_12_attractions_by_keyword(kw, page=0):
 
 def get_12_attractions_by_page(page):
 
-	# should get the total amounts of attractions
-
 	try:
 
 		con = db.get_connection()
 		Cursor = con.cursor(dictionary=True)
-		sql_total_cnt = 'SELECT COUNT(name) AS total FROM attractions;'
-		Cursor.execute(sql_total_cnt)
-		totals = Cursor.fetchall()[0]['total']
+		page_size = 24 # judge the nextPage
+		start = page * 12
 
-		max_page = math.ceil(totals / 12) - 1
+		sql_12 = 'SELECT * FROM attractions limit %s, %s'
+		Cursor.execute(sql_12, (start, page_size))
+		demand_attractions_raw = Cursor.fetchall()
 
-		if page <= max_page and page >= 0:
+		demand_attractions = []
+		for img_datatype in demand_attractions_raw:
+			img_datatype['images'] = json.loads(img_datatype['images'])
+			demand_attractions.append(img_datatype)
 
-			sql_12 = 'SELECT * FROM attractions WHERE id >= %s AND id <= %s'
-			page_range = ((page*12)+1, (page+1)*12)
-			Cursor.execute(sql_12, page_range)
-			demand_attractions_raw = Cursor.fetchall()
+		if len(demand_attractions) > 12:
+		
+			return {'nextPage': page+1,
+					'data': demand_attractions}
+		
+		elif len(demand_attractions) < 13 and len(demand_attractions) > 0:
 
-			demand_attractions = []
-			for img_datatype in demand_attractions_raw:
-				img_datatype['images'] = json.loads(img_datatype['images'])
-				demand_attractions.append(img_datatype)
-
-			if page < max_page:
-			
-				return {'nextPage': page+1,
-						'data': demand_attractions}
-			else:
-
-				return {'nextPage': None,
-						'data': demand_attractions}
+			return {'nextPage': None,
+					'data': demand_attractions}
 
 		else:
 
@@ -269,4 +244,5 @@ async def get_mrt_info(request: Request):
 		Cursor.close()
 
 if __name__ == '__main__':
-    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+    #uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+	uvicorn.run("app:app", port=8000, reload=True)
