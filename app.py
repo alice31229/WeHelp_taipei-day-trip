@@ -85,9 +85,9 @@ def get_12_attractions_by_keyword(kw, page=0):
 				return {'nextPage': 1,
 						'data': query_result[:12]}
 			
-			elif page > 0 and page <= math.ceil(page / 12): 
+			elif page > 0 and page <= math.ceil(total / 12) - 1: 
 
-				if page != math.ceil(page / 12):
+				if page != math.ceil(total / 12) - 1:
 
 					return {'nextPage': page+1,
 			 				'data': query_result[12*page:12*(page+1)]}
@@ -128,7 +128,7 @@ def get_12_attractions_by_page(page):
 		Cursor.execute(sql_total_cnt)
 		totals = Cursor.fetchall()[0]['total']
 
-		max_page = math.ceil(totals / 12)
+		max_page = math.ceil(totals / 12) - 1
 
 		if page <= max_page and page >= 0:
 
