@@ -1,6 +1,9 @@
 from fastapi import *
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 app=FastAPI()
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Static Pages (Never Modify Code in this Block)
 @app.get("/", include_in_schema=False)
@@ -244,5 +247,5 @@ async def get_mrt_info(request: Request):
 		Cursor.close()
 
 if __name__ == '__main__':
-    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
-	#uvicorn.run("app:app", port=8000, reload=True)
+    #uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+	uvicorn.run("app:app", port=8000, reload=True)
