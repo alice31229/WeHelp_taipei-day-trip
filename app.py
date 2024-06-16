@@ -1,6 +1,9 @@
 from fastapi import *
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 app=FastAPI()
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Static Pages (Never Modify Code in this Block)
 @app.get("/", include_in_schema=False)
@@ -119,7 +122,7 @@ def get_12_attractions_by_page(page):
 		if len(demand_attractions) > 12:
 		
 			return {'nextPage': page+1,
-					'data': demand_attractions}
+					'data': demand_attractions[:12]}
 		
 		elif len(demand_attractions) < 13 and len(demand_attractions) > 0:
 

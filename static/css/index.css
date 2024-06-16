@@ -1,0 +1,486 @@
+/* 引入字體 Noto Sans TC */
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans+TC&display=swap&subset=chinese-traditional');
+
+* {
+    box-sizing: border-box;
+}
+
+body{
+    margin: 0 auto;
+    font-family: 'Noto Sans TC', sans-serif;
+    max-width: 1920px;
+}
+
+.header{
+    position: fixed; 
+    top: 0; 
+    width: 100%;
+    background-color: #F8F8F8;
+    z-index: 30;
+} 
+
+.title{
+    cursor: pointer;
+    margin-top: 5.25px;
+    margin-bottom: 5.25px;
+    font-size: 30px; 
+    color: #448899; 
+    font-weight: 700;
+}
+
+.thousand_twoHundred_navbar{
+    max-width: 1200px; 
+    display: flex; 
+    justify-content: space-between;
+    margin: 0 auto;
+    align-items: center;
+}
+
+.items{
+    display: flex;
+    justify-content: flex-end;
+    flex: auto;
+}
+
+.item{
+    font-size: 16px;
+    color: #666666;
+    margin: 10px 10px 10px 10px;
+}
+
+.middle{
+    background-size: cover;
+    height: 320px;
+    position: relative; 
+    object-fit: cover;
+    overflow: hidden;
+}
+
+.thousand_twoHundred{
+    max-width: 1200px; 
+    margin: 0 auto;
+    position: relative; 
+    z-index: 20;
+}
+
+
+.vertical{
+    display: flex;
+    flex-direction: column;
+    padding: 10px 10px 10px 10px;
+}
+
+.relax{
+    color: #F8F8F8;
+    font-size: 28px; 
+    margin-top: 85px;
+}
+
+.explore{
+    color: #F8F8F8;
+    font-size: 16px; 
+    margin-top: 15px;
+}
+
+.form-keyword-search{
+    position: relative;
+    z-index: 20;
+    margin-top: 25px; 
+    margin-bottom: 86px; 
+}
+
+.searchKeyword_input{
+    border: 1px solid transparent;
+    width: 400px; 
+    padding-left: 10px; 
+    border-top-left-radius: 5px; 
+    border-bottom-left-radius: 5px; 
+    height: 46px;
+    font-size: 16px;
+}
+
+.searchKeyword_button{
+    border: 1px solid transparent;
+    width: 60px; 
+    background-color: #448899; 
+    padding: 7px 8px 15px 8px; 
+    cursor: pointer; 
+    border-top-right-radius: 5px; 
+    border-bottom-right-radius: 5px; 
+    height: 46px;
+    position: absolute;
+}
+
+
+.back_img{
+    position: absolute;
+    z-index: 10;
+
+    object-fit: cover;
+    overflow: hidden;
+    
+    background-size: cover;
+    height: 320px;
+    width: 100%;
+}
+
+.mrt_sorted {
+    max-width: 1200px;
+    display: flex;
+    justify-content: space-between;
+    margin: 0 auto;
+    align-items: center;
+    padding-top: 35px;
+    padding-bottom: 20px;
+    
+}
+
+.mrts {
+    display: flex;
+    white-space: nowrap;
+    overflow-x: auto;
+}
+
+.mrts::-webkit-scrollbar {
+    display: none; 
+}
+
+.mrt {
+    cursor: pointer;
+    color: gray;
+    padding-left: 10px;
+    padding-right: 10px;
+    /* min-width: 100px; */
+}
+
+.mrt:hover {
+    color: black;
+}
+
+.left-arrow {
+    padding-right: 10px;
+}
+
+.left-arrow,
+.right-arrow {
+    width: 42px;
+    height: 32px;
+    background-size: cover;
+    cursor: pointer;
+}
+
+.right-arrow {
+    padding-left: 10px;
+}
+
+.noAttraction {
+    display: none;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.copyRight{
+    display: none;
+    height: 104px;
+    width: 100%;
+    bottom: 0; 
+    left: 0;
+}
+
+.copy_right {
+    object-fit: cover;
+    width: 100%;
+    height: 100%
+}
+
+#loading {
+    display: none;
+}
+
+@media(max-width: 1920px) and (min-width: 1201px){
+
+    .load_attractions {
+        max-width: 1200px;
+        display: flex;
+        justify-content: center;
+        flex-flow: row wrap;
+        margin: 0 auto;
+        margin-top: 15px;
+        margin-bottom: 105px;
+    }
+    
+    .load_attractions .picture_word:last-child {
+        margin-right: auto;
+    }
+    
+    .picture {
+        flex: none;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(0, 0, 0, .1);
+        border-radius: 5px;
+        position: relative; 
+    }
+    
+    .picture_word:hover {
+        opacity: 0.5;
+        cursor: pointer;
+    }
+
+    .picture_word {
+        display: flex;
+        flex-direction: column;
+        width: 270px;
+        margin: 15px 15px 15px 15px;
+    }
+
+    
+    .picture > img {
+        border-top-right-radius: 5px;
+        border-top-left-radius: 5px;
+        height: 197px;
+        object-fit: cover; 
+        width: 100%; 
+    }
+    
+    .attraction_name {
+        font-weight: 900;
+        font-size: 16px;
+        display: flex;
+        align-items: center; 
+        padding-left: 10px;
+        overflow: hidden;
+        color: white;
+        background-color: rgba(0, 0, 0, 0.5); 
+        height: 40px;
+        position: absolute; 
+        bottom: 0; 
+        width: 100%; 
+        z-index: 1; 
+    }
+    
+    .word {
+        border: 1px;
+        border-style: none solid solid solid;
+        border-color: rgb(240, 239, 239);
+        border-bottom-right-radius: 5px;
+        border-bottom-left-radius: 5px; 
+        height: 45px;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center; 
+        padding-left: 10px;
+        padding-right: 10px;
+        color: #757575;
+        font-size: 16px;
+        
+        width: 100%; 
+        box-sizing: border-box; 
+    }
+    
+
+    .attraction_mrt .attraction_category{
+        font-weight: 100;
+    }
+
+}
+
+@media(max-width: 1200px) and (min-width: 601px){
+
+    .title {
+        padding-left: 5px;
+    }
+
+    .mrt_sorted, .load_attractions{
+        max-width: 95%;
+    }
+
+    .load_attractions {
+        display: flex;
+        justify-content: center;
+        flex-flow: row wrap;
+        margin: 0 auto;
+        margin-top: 15px;
+        margin-bottom: 105px;
+    }
+    
+    .picture {
+        flex: none;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(0, 0, 0, .1);
+        border-radius: 5px;
+        position: relative; 
+    }
+    
+    .picture_word:hover {
+        opacity: 0.5;
+        cursor: pointer;
+    }
+
+    .picture_word {
+        display: flex;
+        flex-direction: column;
+        width: 43%;
+        margin: 15px 15px 15px 15px;
+        
+    }
+
+    
+    .picture > img {
+        border-top-right-radius: 5px;
+        border-top-left-radius: 5px;
+        height: 197px;
+        object-fit: cover; 
+        width: 100%; 
+    }
+    
+    .attraction_name {
+        font-weight: 900;
+        font-size: 16px;
+        display: flex;
+        align-items: center; 
+        padding-left: 10px;
+        overflow: hidden;
+        color: white;
+        background-color: rgba(0, 0, 0, 0.5); 
+        height: 40px;
+        position: absolute; 
+        bottom: 0; 
+        width: 100%; 
+        z-index: 1; 
+    }
+    
+    .word {
+        border: 1px;
+        border-style: none solid solid solid;
+        border-color: rgb(240, 239, 239);
+        border-bottom-right-radius: 5px;
+        border-bottom-left-radius: 5px; 
+        height: 45px;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center; 
+        padding-left: 10px;
+        padding-right: 10px;
+        color: #757575;
+        font-size: 16px;
+        
+        width: 100%; 
+        box-sizing: border-box; 
+    }
+    
+
+    .attraction_mrt .attraction_category{
+        font-weight: 100;
+    }
+
+}
+
+@media(max-width: 600px){
+
+    .title {
+        padding-left: 5px;
+    }
+
+    .searchKeyword_input{
+        width: 225px; 
+    }
+
+    .mrt_sorted, .load_attractions{
+        max-width: 90%;
+    }
+
+    .load_attractions {
+        display: flex;
+        justify-content: center;
+        flex-flow: row wrap;
+        margin: 0 auto;
+        margin-top: 15px;
+        margin-bottom: 105px;
+    }
+    
+    .load_attractions .picture:last-child {
+        margin-right: auto;
+    }
+    
+    .picture {
+        flex: none;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(0, 0, 0, .1);
+        border-radius: 5px;
+        position: relative; 
+    }
+    
+    .picture_word:hover {
+        opacity: 0.5;
+        cursor: pointer;
+    }
+
+    .picture_word {
+        display: flex;
+        flex-direction: column;
+        width: 95%;
+        margin: 15px 15px 15px 15px;
+        
+    }
+
+    
+    .picture > img {
+        border-top-right-radius: 5px;
+        border-top-left-radius: 5px;
+        height: 235px;
+        object-fit: cover; 
+        width: 100%; 
+    }
+    
+    .attraction_name {
+        font-weight: 900;
+        font-size: 16px;
+        display: flex;
+        align-items: center; 
+        padding-left: 10px;
+        overflow: hidden;
+        color: white;
+        background-color: rgba(0, 0, 0, 0.5); 
+        height: 40px;
+        position: absolute; 
+        bottom: 0; 
+        width: 100%; 
+        z-index: 1; 
+    }
+    
+    .word {
+        border: 1px;
+        border-style: none solid solid solid;
+        border-color: rgb(240, 239, 239);
+        border-bottom-right-radius: 5px;
+        border-bottom-left-radius: 5px; 
+        height: 45px;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center; 
+        padding-left: 10px;
+        padding-right: 10px;
+        color: #757575;
+        font-size: 16px;
+        
+        width: 100%; 
+        box-sizing: border-box; 
+    }
+    
+
+    .attraction_mrt .attraction_category{
+        font-weight: 100;
+    }
+
+}
