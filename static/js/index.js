@@ -1,20 +1,25 @@
-// load more attractions scroll
-
-function eventsDomTree(events){
+function eventsDomTree(events) {
     const more_attractions = document.querySelector('.load_attractions');
-    events.forEach(event => {
-        const allEvents = document.createElement('div');
-        allEvents.setAttribute('class','picture');
 
-        const card = document.createElement('div');
-        card.setAttribute('class', 'word');
+    events.forEach(event => {
+        // Create picture div
+        const picture = document.createElement('div');
+        picture.setAttribute('class', 'picture');
+
+        const eventImg = document.createElement('img');
+        eventImg.src = event.images[0];
+        eventImg.alt = 'Attraction';
 
         const attractionName = document.createElement('div');
         attractionName.setAttribute('class', 'attraction_name');
         attractionName.textContent = event.name;
 
-        const horizon = document.createElement('div');
-        horizon.setAttribute('class', 'horizonal');
+        picture.appendChild(eventImg);
+        picture.appendChild(attractionName);
+
+        // Create word div
+        const word = document.createElement('div');
+        word.setAttribute('class', 'word');
 
         const attractionMrt = document.createElement('div');
         attractionMrt.setAttribute('class', 'attraction_mrt');
@@ -24,110 +29,268 @@ function eventsDomTree(events){
         attractionCategory.setAttribute('class', 'attraction_category');
         attractionCategory.textContent = event.category;
 
-        const eventImg = document.createElement('img');
-        eventImg.src = event.images[0];
+        word.appendChild(attractionMrt);
+        word.appendChild(attractionCategory);
 
-        horizon.appendChild(attractionMrt);
-        horizon.appendChild(attractionCategory);
-        card.appendChild(attractionName);
-        card.appendChild(horizon);
+        // Unite picture and word into picture_word
+        const picture_word = document.createElement('div');
+        picture_word.setAttribute('class', 'picture_word');
 
-        allEvents.appendChild(eventImg);
-        allEvents.appendChild(card);
+        // Append picture and word divs to the load_attractions div
+        picture_word.appendChild(picture);
+        picture_word.appendChild(word);
 
-        more_attractions.appendChild(allEvents);
+        more_attractions.appendChild(picture_word);
     });
-    
-};
+}
 
-async function addAttraction(page) {
-    const postResponse = await fetch(`http://0.0.0.0:8000/api/attractions?page=${page}`);
-    const postData = await postResponse.text();
-    const attraction_result = JSON.parse(postData);
-    let infos = attraction_result.data;
-    
-    try{
+let nextPage = 0;
+let isLoading = false;
+
+async function addAttraction(page = 0) {
+    if (isLoading) return; // Prevent multiple fetch requests
+    isLoading = true;
+
+    let clr = document.querySelector('.noAttraction');
+    clr.style.display = 'none';
+    let footer = document.querySelector('.copyRight');
+    footer.style.display = 'none';
+    footer.style.position = '';
+
+    let loading = document.querySelector('#loading');
+    loading.style.display = 'block';
+
+    try {
+        //const postResponse = await fetch(`http://127.0.0.1:8000/api/attractions?page=${page}`);
+        const postResponse = await fetch(`http://0.0.0.0:8000/api/attractions?page=${page}`);
+        const postData = await postResponse.text();
+        const attraction_result = JSON.parse(postData);
+        let infos = attraction_result.data;
+
         eventsDomTree(infos);
 
-        // judge last page or not then add footer
-        if (attraction_result.nextPage == null){
-            pageIndex = 0;
-        }else{
-            pageIndex += 1;
-            document.querySelector('#loading').classList.remove('show');
-            isActive = false;
+        // Judge last page or not then show footer
+        if (attraction_result.nextPage == null) {
+            nextPage = 0;
+            loading.style.display = 'none';
+            footer.style.display = 'flex';
+        } else {
+            nextPage = attraction_result.nextPage;
         }
-    }catch(e){
-        console.log('scroll over');
-    }finally{
-        document.querySelector('#loading').classList.remove('show');
+    } catch (e) {
+        console.error('Error fetching attractions:', e);
+    } finally {
+        isLoading = false;
     }
-    
 }
 
+async function addKwdAttraction(page = 0, keyword) {
+    if (isLoading) return; // Prevent multiple fetch requests
+    isLoading = true;
 
-async function addKwdAttraction(page, keyword) {
-    const postResponse = await fetch(`http://0.0.0.0:8000/api/attractions?page=${page}&keyword=${keyword}`);
-    //let pageJudge = await fetch(`http://127.0.0.1:3000/api/attractions?page=${page}`);
-    const postData = await postResponse.text();
-    //let pageJudge2 = await pageJudge.text();
-    const attraction_result = JSON.parse(postData);
-    //let pageJudge3 = JSON.parse(pageJudge2);
+    let clr = document.querySelector('.noAttraction');
+    clr.style.display = 'none';
+    let footer = document.querySelector('.copyRight');
+    footer.style.display = 'none';
+    footer.style.position = '';
 
-    let infos = attraction_result.data;
-    
-    try{
-        eventsDomTree(infos);
+    let loading = document.querySelector('#loading');
+    loading.style.display = 'block';
 
-        // judge last page or not then add footer
-        if (attraction_result.nextPage == null){
-            //kwdPage = 0;
-            isActive = true;
-        }else{
-            //kwdPage += 1;
-            document.querySelector('#loading').classList.remove('show');
-            isActive = false;
+    try {
+        //const postResponse = await fetch(`http://127.0.0.1:8000/api/attractions?page=${page}&keyword=${keyword}`);
+        const postResponse = await fetch(`http://0.0.0.0:8000/api/attractions?page=${page}&keyword=${keyword}`);
+        const postData = await postResponse.text();
+        const attraction_result = JSON.parse(postData);
+        let infos = attraction_result.data;
+
+        if (attraction_result.error) {
+            check();
+        } else {
+            eventsDomTree(infos);
         }
-    }catch(e){
-        console.log('scroll over');
-    }finally{
-        document.querySelector('#loading').classList.remove('show');
-    }
-    
-}
 
-
-// // keyword search
-
-function check(){
-    let originalAttractions = document.querySelector('.load_attractions');
-    if (originalAttractions.innerHTML == ''){
-        originalAttractions.innerHTML = '<h3>查無旅遊景點資訊</h3>';
+        // Judge last page or not then add footer
+        if (attraction_result.nextPage == null) {
+            nextPage = 0;
+            loading.style.display = 'none';
+            footer.style.display = 'flex';
+        } else {
+            nextPage = attraction_result.nextPage;
+        }
+    } catch (e) {
+        console.error('Error fetching keyword attractions:', e);
+    } finally {
+        isLoading = false;
     }
 }
 
-window.onload = function(){ // 等onload完dom元素才抓得到按鈕
-    let btn = document.querySelector('.searchKeyword_button'); 
-    btn.addEventListener('click', function(e){
-        e.preventDefault(); 
-        isActive = false;
+function check() {
+    let no_attraction = document.querySelector('.noAttraction');
+    no_attraction.style.display = 'flex';
+    let footerFixed = document.querySelector('.copyRight');
+    footerFixed.style.position = 'fixed';
+}
 
-        // 先清空景點畫面
+async function addMRT() {
+    try {
+        //const postResponse = await fetch('http://127.0.0.1:8000/api/mrts');
+        const postResponse = await fetch('http://0.0.0.0:8000/api/mrts');
+        const postData = await postResponse.text();
+        const mrt_result = JSON.parse(postData);
+        let infos = mrt_result.data;
+
+        let appendHere = document.querySelector('.mrts');
+
+        infos.forEach(m => {
+            const newMRTDiv = document.createElement('div');
+            newMRTDiv.textContent = m;
+            newMRTDiv.className = 'mrt';
+
+            appendHere.appendChild(newMRTDiv);
+        });
+    } catch (e) {
+        console.error('Error fetching MRTs:', e);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    addMRT();
+    addAttraction();
+
+    let observer;
+    const observerOptions = {
+        root: null,
+        rootMargin: '100px',
+        threshold: 0.1
+    };
+
+    const createObserver = (callback) => {
+        if (observer) observer.disconnect(); // avoid observers interfering each other
+        observer = new IntersectionObserver(callback, observerOptions);
+        const loadingElement = document.querySelector('#loading');
+        observer.observe(loadingElement);
+    };
+
+    const observerCallback = entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !isLoading) {
+                if (nextPage) {
+                    addAttraction(nextPage);
+                } else {
+                    const footer = document.querySelector('.copyRight');
+                    footer.style.display = 'flex';
+                }
+            }
+        });
+    };
+
+    createObserver(observerCallback);
+
+    // Keyword search event
+    let btn = document.querySelector('.searchKeyword_button');
+    btn.addEventListener('click', function (e) {
+        e.preventDefault();
+
         let originalAttractions = document.querySelector('.load_attractions');
         originalAttractions.innerHTML = '';
 
-
-        // 再載入關鍵字景點
         let kwd = document.querySelector('.searchKeyword_input');
-
         addKwdAttraction(0, kwd.value);
-        
-        //setTimeout(check(), 2000);
-        
+
+        const keywordObserverCallback = entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !isLoading) {
+                    if (nextPage) {
+                        addKwdAttraction(nextPage, kwd.value);
+                    } else {
+                        const footer = document.querySelector('.copyRight');
+                        footer.style.display = 'flex';
+                    }
+                }
+            });
+        };
+
+        createObserver(keywordObserverCallback);
     });
-}
 
-// load the mrts into the mrt_sorted part
+    // MRT click event
+    let mrts = document.querySelector('.mrts');
+    mrts.addEventListener('click', async (event) => {
+        if (event.target.classList.contains('mrt')) {
+            const keyword = event.target.textContent;
+            let searchKeyword_input = document.querySelector('.searchKeyword_input');
+            searchKeyword_input.value = keyword;
 
+            let originalAttractions = document.querySelector('.load_attractions');
+            originalAttractions.innerHTML = '';
 
-// if rwd in mobile mode, change the back_img to the [mobile] one
+            addKwdAttraction(0, keyword);
+
+            const keywordObserverCallback = entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !isLoading) {
+                        if (nextPage) {
+                            addKwdAttraction(nextPage, keyword);
+                        } else {
+                            const footer = document.querySelector('.copyRight');
+                            footer.style.display = 'flex';
+                        }
+                    }
+                });
+            };
+
+            createObserver(keywordObserverCallback);
+        }
+    });
+
+    // Arrow click event
+    let leftArrow = document.querySelector('.left-arrow');
+    let rightArrow = document.querySelector('.right-arrow');
+    const mrtList = document.querySelector('.mrts');
+
+    if (leftArrow && rightArrow && mrtList) {
+        leftArrow.addEventListener('click', () => {
+            mrtList.scrollBy({ left: -300, behavior: 'smooth' });
+        });
+
+        rightArrow.addEventListener('click', () => {
+            mrtList.scrollBy({ left: 300, behavior: 'smooth' });
+        });
+    } else {
+        console.log("One or more elements not found:", { leftArrow, rightArrow, mrtList });
+    }
+
+    // Arrow hover effect
+    const leftDefaultSrc = '/static/photo_icon/mrt_left_Default.png';
+    const leftHoverSrc = '/static/photo_icon/mrt_left_Hovered.png';
+    const rightDefaultSrc = '/static/photo_icon/mrt_right_Default.png';
+    const rightHoverSrc = '/static/photo_icon/mrt_right_Hovered.png';
+
+    leftArrow.addEventListener('mouseover', () => {
+        leftArrow.src = leftHoverSrc;
+    });
+
+    leftArrow.addEventListener('mouseout', () => {
+        leftArrow.src = leftDefaultSrc;
+    });
+
+    rightArrow.addEventListener('mouseover', () => {
+        rightArrow.src = rightHoverSrc;
+    });
+
+    rightArrow.addEventListener('mouseout', () => {
+        rightArrow.src = rightDefaultSrc;
+    });
+
+    // back to home page by clicking 台北一日遊
+    let home = document.querySelector('.title');
+    home.addEventListener('click', () => {
+        let clr = document.querySelector('.noAttraction');
+        clr.style.display = 'none';
+        let footer = document.querySelector('.copyRight');
+        footer.style.display = 'none';
+        footer.style.position = '';
+        window.location.href = '/';
+    });
+});

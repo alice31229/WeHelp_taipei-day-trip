@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>首頁</title>
-  <link rel="stylesheet" href="css/index.css">
-  <script src="js/index.js"></script>
+  <link rel="stylesheet" href="/static/css/index.css">
+  <script src="/static/js/index.js"></script>
 </head>
 <body>
   
@@ -21,7 +21,7 @@
 
   <div class='middle'>
 
-    <img class="back_img" src="photo_icon/[desktop] hero section.png" alt="templeImg">
+    <img class="back_img" src="/static/photo_icon/[orig] welcome image.png" alt="templeImg">
 
     <div class="thousand_twoHundred">
 
@@ -31,7 +31,7 @@
           <div class="form-keyword-search">
               <form action="/api/attractions">
                   <input type="text" name='keyword' class="searchKeyword_input" placeholder="輸入景點名稱查詢">
-                  <button class="searchKeyword_button"><img src="photo_icon/search.png" alt="iconSearch" style="width: 30px; height: 30px;"></button>
+                  <button class="searchKeyword_button"><img src="/static/photo_icon/search.png" alt="iconSearch" style="width: 30px; height: 30px;"></button>
               </form>
           </div>
         </div>
@@ -41,25 +41,23 @@
 
   <div class="mrt_sorted">
 
-    <!-- <div class="left-arrow"></div>
-    <div class="mrts">你好</div>
-    <div class="right-arrow"></div> -->
+    <img src="/static/photo_icon/mrt_left_Default.png" alt="left-arrow" class="left-arrow">
+    <div class="mrts">
 
-    <img src="photo_icon/mrt_left_Default.png" alt="left-arrow" class="left-arrow">
-    <form class="mrts" action="/api/attractions">你好</form>
-    <form class="mrts" action="/api/attractions">拉拉</form>
-    <!-- <div class="mrts">嗨嗨</div> -->
-    <img src="photo_icon/mrt_right_Default.png" alt="right-arrow" class="right-arrow">
+    </div>
+    <img src="/static/photo_icon/mrt_right_Default.png" alt="right-arrow" class="right-arrow">
   </div>
+
+<h3 class="noAttraction">查無相關景點，請再試試別的～</h3>
 
   <div class="load_attractions">
 
-    
-
   </div>
 
+  <div id="loading"></div>
+
   <footer class="copyRight">
-    <img src="photo_icon/footer.png" alt="copyRight" class="copy_right">
+    <img src="/static/photo_icon/footer.png" alt="copyRight" class="copy_right">
   </footer>
 
 </body>

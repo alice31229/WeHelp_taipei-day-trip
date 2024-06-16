@@ -122,7 +122,7 @@ def get_12_attractions_by_page(page):
 		if len(demand_attractions) > 12:
 		
 			return {'nextPage': page+1,
-					'data': demand_attractions}
+					'data': demand_attractions[:12]}
 		
 		elif len(demand_attractions) < 13 and len(demand_attractions) > 0:
 
@@ -247,5 +247,5 @@ async def get_mrt_info(request: Request):
 		Cursor.close()
 
 if __name__ == '__main__':
-    #uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
-	uvicorn.run("app:app", port=8000, reload=True)
+    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+	#uvicorn.run("app:app", port=8000, reload=True)
