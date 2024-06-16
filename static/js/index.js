@@ -61,8 +61,7 @@ async function addAttraction(page = 0) {
     loading.style.display = 'block';
 
     try {
-        //const postResponse = await fetch(`http://127.0.0.1:8000/api/attractions?page=${page}`);
-        const postResponse = await fetch(`http://0.0.0.0:8000/api/attractions?page=${page}`);
+        const postResponse = await fetch(`/api/attractions?page=${page}`);
         const postData = await postResponse.text();
         const attraction_result = JSON.parse(postData);
         let infos = attraction_result.data;
@@ -98,8 +97,7 @@ async function addKwdAttraction(page = 0, keyword) {
     loading.style.display = 'block';
 
     try {
-        //const postResponse = await fetch(`http://127.0.0.1:8000/api/attractions?page=${page}&keyword=${keyword}`);
-        const postResponse = await fetch(`http://0.0.0.0:8000/api/attractions?page=${page}&keyword=${keyword}`);
+        const postResponse = await fetch(`/api/attractions?page=${page}&keyword=${keyword}`);
         const postData = await postResponse.text();
         const attraction_result = JSON.parse(postData);
         let infos = attraction_result.data;
@@ -134,8 +132,7 @@ function check() {
 
 async function addMRT() {
     try {
-        //const postResponse = await fetch('http://127.0.0.1:8000/api/mrts');
-        const postResponse = await fetch('http://0.0.0.0:8000/api/mrts');
+        const postResponse = await fetch('/api/mrts');
         const postData = await postResponse.text();
         const mrt_result = JSON.parse(postData);
         let infos = mrt_result.data;
