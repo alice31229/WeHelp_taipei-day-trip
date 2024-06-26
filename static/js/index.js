@@ -5,6 +5,7 @@ function eventsDomTree(events) {
         // Create picture div
         const picture = document.createElement('div');
         picture.setAttribute('class', 'picture');
+        //picture.setAttribute('id', event.id);
 
         const eventImg = document.createElement('img');
         eventImg.src = event.images[0];
@@ -35,6 +36,7 @@ function eventsDomTree(events) {
         // Unite picture and word into picture_word
         const picture_word = document.createElement('div');
         picture_word.setAttribute('class', 'picture_word');
+        picture_word.setAttribute('id', event.id);
 
         // Append picture and word divs to the load_attractions div
         picture_word.appendChild(picture);
@@ -152,6 +154,7 @@ async function addMRT() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+    
     addMRT();
     addAttraction();
 
@@ -210,6 +213,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
         createObserver(keywordObserverCallback);
     });
+
+    // attraction click event
+    let attractions = document.querySelector('.load_attractions');
+    attractions.addEventListener('click', async (event) => {
+        // Check if the clicked element or its parent has the 'picture_word' class
+        let targetElement = event.target;
+        while (targetElement && !targetElement.classList.contains('picture_word')) {
+            targetElement = targetElement.parentElement;
+        }
+
+        if (targetElement && targetElement.classList.contains('picture_word')) {
+            let attrID = targetElement.id;
+            console.log(`Navigating to attraction/${attrID}`); // For debugging
+
+            // Ensure attrID is valid before navigating
+            if (attrID) {
+                window.location.assign(`attraction/${attrID}`);
+            }
+            return;
+        }
+    })
 
     // MRT click event
     let mrts = document.querySelector('.mrts');

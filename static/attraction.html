@@ -3,9 +3,88 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Attraction</title>
+  <title>景點</title>
+  <link rel="stylesheet" href="/static/css/attraction.css">
+  <script src="/static/js/attraction.js"></script>
 </head>
 <body>
   
+  <div class='header'>
+    <div class="thousand_twoHundred_navbar">
+        <a href="/" class='title'>台北一日遊</a> 
+        <div class='items'>
+            <div class='item'>預定行程</div>
+            <div class='item'>登入/註冊</div>
+        </div>
+    </div>
+    <hr class="line" id="upper_line">
+  </div>
+
+
+  <div class="imgs_schedule">
+    <div class="thousand_twoHundred">
+        <div class="banner_container">
+            
+            <div class="img_box"> <!--圖片元素-->
+                <!-- <img src="" alt="" class="attraction_imgs"> -->
+            </div>
+            <div class="dot_box"> <!--選擇按鈕 根據景點圖片數量 新增多少點點-->
+                <!-- <img src="" alt="" class="dot"> -->
+            </div>
+
+            <img src="/static/photo_icon/left arrow.png" class="arrow_btn_left" onclick="minusSlides(counter)"> <!--左切換按鈕-->
+            <img src="/static/photo_icon/right arrow.png" class="arrow_btn_right" onclick="plusSlides(counter)"> <!--右切換按鈕-->
+            
+        </div>
+        <div class="site_info">
+            <div class="name"></div>
+            <div class="category_at_mrt"></div>
+            <div class="schedule">
+                <div class="common_style">訂購導覽行程</div>
+                <div class="no_bold_style">以此景點為中心的一日行程，帶您探索城市角落故事</div>
+
+                <div class="detail">
+                    <div class="common_style">選擇日期：</div> 
+                    <input type="date" class="DateSetMargin">
+                </div>
+
+                
+                <div class="detail">
+                    <div class="common_style">選擇時間：</div>
+                    
+                    <input type="radio" checked="checked" name="time" id="radioEarlier">
+                    <label for="checkbox_earlier" class="checkbox_earlier">上半天</label>
+                    
+                    <input type="radio" id="radioLater" name="time">
+                    <label for="checkbox_later" class="checkbox_later">下半天</label>
+                    
+                </div>
+                
+                <div class="detail">
+                    <div class="common_style">導覽費用：</div>
+                    <div class="fee">新台幣2,000元</div>
+                    <!-- <div class="fee_later">新台幣2,500元</div> -->
+                </div>
+                
+                <button class="start_book">開始預定行程</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr class="line" id="lower_line">
+
+<p class="description"></p>
+
+<div class="simple_style">景點地址：</div>
+<div class="address"></div>
+
+<div class="simple_style">交通方式：</div>
+<div class="transport"></div>
+
+  <footer class="copyRight">
+    <img src="/static/photo_icon/footer.png" alt="copyRight" class="copy_right">
+  </footer>
+
 </body>
 </html>
