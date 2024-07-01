@@ -157,7 +157,273 @@ document.addEventListener("DOMContentLoaded", function () {
     
     addMRT();
     addAttraction();
+    checkLogin();
 
+    // sign-in pop up
+    let signIn = document.querySelector('.pop-background-color-sign-in');
+    let closeSignIn = document.querySelector('.close-pop-sign-in');
+    let signInEnroll = document.getElementById('signInEnroll');
+    signInEnroll.addEventListener('click', function() {
+        if (signInEnroll.textContent === '登入/註冊'){
+            signIn.style.display = 'flex';
+        }
+    })
+    closeSignIn.addEventListener('click', function(){
+        clearInputValue();
+        adjustHeightAll();
+        signIn.style.display = 'none';
+    })
+    signIn.addEventListener('click', function(event) {
+        if (event.target === signIn) {
+
+            // if error message shows -> hide
+            let errorShow = document.querySelector('.error-message-sign-in');
+            errorShow.style.display = 'none';
+            clearInputValue();
+            adjustHeightAll();
+            signIn.style.display = 'none';
+
+        }
+    })
+
+    // check log in or not
+    async function checkLogin() {
+        const token = localStorage.getItem("authToken");
+        
+        try {
+            const response = await fetch('/api/user/auth', {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.data) {
+                    // User is authenticated
+                    signInEnroll.textContent = "登出帳號";
+
+                    document.querySelector('#signInEnroll').addEventListener("click", logout);
+                } else {
+                    // Token is invalid or expired
+                    localStorage.removeItem("authToken");
+                    showSignInButton();
+                }
+            } else {
+                throw new Error("Failed to verify token");
+            }
+        } catch (error) {
+            console.error("Error verifying token:", error);
+            localStorage.removeItem("authToken");
+            showSignInButton();
+        }
+
+        if (!token) { 
+            showSignInButton();
+        }
+    }
+
+    function showSignInButton() {
+        signInEnroll.textContent = "登入/註冊";
+        signInEnroll.id = "signInEnroll";
+    }
+
+    // log out -> remove localStorage token
+    function logout() {
+        localStorage.removeItem("authToken");
+        checkLogin();  // update log out -> log-in/enroll
+    }
+
+    //checkLogin();
+
+    // enroll sign-in switch
+    let enroll = document.querySelector('.pop-background-color-enroll');
+    let enrollSwitch = document.querySelector('.enroll-dialog');
+    let backSignIn = document.querySelector('.sign-in-dialog');
+    let closeEnroll = document.querySelector('.close-pop-enroll');
+
+
+    enrollSwitch.addEventListener('click', function() {
+        signIn.style.display = 'none';
+        enroll.style.display = 'flex';
+        clearInputValue();
+        adjustHeightAll();
+    })
+    backSignIn.addEventListener('click', function() {
+        enroll.style.display = 'none';
+        signIn.style.display = 'flex';
+        clearInputValue();
+        adjustHeightAll();
+    })
+    closeEnroll.addEventListener('click', function() {
+        enroll.style.display = 'none';
+        clearInputValue();
+        adjustHeightAll();
+    })
+    enroll.addEventListener('click', function(event) {
+        if (event.target === enroll) {
+            let enrollShow = document.querySelector('.message-enroll');
+            enrollShow.style.display = 'none';
+            enroll.style.display = 'none';
+        }
+    })
+
+    // sign in token await
+    const loginForm = document.getElementById("signin"); // 要用form而不是button
+    loginForm.addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+
+        let email = document.querySelector('#emailID');
+        let password = document.querySelector('#passwordID');
+
+        try {
+            const response = await fetch('/api/user/auth', {
+                method: "PUT",
+                body: JSON.stringify({
+                    email: email.value,
+                    password: password.value
+                }),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+
+            let tokenJson = await response.json();
+            
+            //if (!response.ok) {
+            if (!response.ok || !tokenJson.token) {
+                //let errorMessage = decodeURIComponent(tokenJson.message);
+                let errorMessage = tokenJson.message;
+
+                let adjustHeight = document.querySelector('.pop-up-sign-in');
+                adjustHeight.style.height = '310px';
+
+                let errorMsgShow = document.querySelector('.error-message-sign-in'); 
+                errorMsgShow.style.display = 'block';
+                errorMsgShow.textContent = errorMessage;
+
+                // Add event listener to hide error message on clicking other parts of the sign-in dialog
+                adjustHeight.addEventListener('click', function() {
+                    errorMsgShow.style.display = 'none';
+                    //adjustHeight.style.height = '275px';
+                    adjustHeightAll();
+                }, { once: true });
+
+            } else {
+                let token = tokenJson.token;
+
+                // save token in localStorage
+                localStorage.setItem("authToken", token);
+
+                // close sign in dilalog
+                let closeSignIn = document.querySelector('.pop-background-color-sign-in');
+                closeSignIn.style.display = 'none';
+
+                // 登入/註冊 -> 登出帳戶
+                let signInEnroll = document.getElementById('signInEnroll');
+                signInEnroll.textContent = '登出帳戶';
+
+                // show log in succeed
+                location.reload();
+
+            }
+
+
+        } catch (error) {
+            console.error("Login failed:", error);
+            //alert("登入失敗，請確認電子信箱與密碼是否正確、已註冊");
+        }
+
+    })
+
+
+    // register await
+    let registerSubmit = document.querySelector('#enroll');
+    registerSubmit.addEventListener('submit', async function(event) {
+        
+        event.preventDefault();
+
+        let name = document.querySelector('#nameID');
+        let email = document.querySelector('#emailID-enroll');
+        let password = document.querySelector('#passwordID-enroll');
+
+        try {
+
+            const response = await fetch('/api/user', {
+                method: "POST",
+                body: JSON.stringify({
+                    name: name.value,
+                    email: email.value,
+                    password: password.value
+                }),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+
+            let result = await response.json();
+            let enrollResult = document.querySelector('.message-enroll');
+
+            if (result.ok){
+
+                let adjustHeight = document.querySelector('.pop-up-enroll');
+                adjustHeight.style.height = '369px';
+
+                enrollResult.style.display = 'block';
+                enrollResult.style.color = 'green';
+                enrollResult.textContent = '註冊成功，請登入系統';
+
+                clearInputValue();
+
+                // Add event listener to hide error message on clicking other parts of the sign-in dialog
+                adjustHeight.addEventListener('click', function() {
+                    enrollResult.style.display = 'none';
+                    //adjustHeight.style.height = '332px';
+                    adjustHeightAll();
+                }, { once: true });
+
+            }else {
+
+                let adjustHeight = document.querySelector('.pop-up-enroll');
+                adjustHeight.style.height = '369px';
+
+                enrollResult.style.display = 'block';
+                enrollResult.style.color = 'rgb(137, 28, 28)';
+                enrollResult.textContent = result.message;
+
+                // Add event listener to hide error message on clicking other parts of the sign-in dialog
+                adjustHeight.addEventListener('click', function() {
+                    enrollResult.style.display = 'none';
+                    //adjustHeight.style.height = '332px';
+                    adjustHeightAll();
+                }, { once: true });
+
+            }
+
+        }catch (error){
+            console.error("Register failed:", error);
+        }
+
+    })
+
+    // clear any input value
+    function clearInputValue() {
+        document.querySelector('#emailID').value = '';
+        document.querySelector('#passwordID').value = '';
+        document.querySelector('#nameID').value = '';
+        document.querySelector('#emailID-enroll').value = '';
+        document.querySelector('#passwordID-enroll').value = '';
+    }
+    // adjust sign in / enroll result height
+    function adjustHeightAll() {
+        document.querySelector('.pop-up-sign-in').style.height = '275px';
+        document.querySelector('.pop-up-enroll').style.height = '332px';
+    }
+
+    // infinite scroll observer settings
     let observer;
     const observerOptions = {
         root: null,
@@ -265,7 +531,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Arrow click event
+    // mrt Arrow click event
     let leftArrow = document.querySelector('.left-arrow');
     let rightArrow = document.querySelector('.right-arrow');
     const mrtList = document.querySelector('.mrts');
