@@ -35,7 +35,7 @@ import uvicorn
 import bcrypt
 import mysql.connector
 from pydantic import BaseModel
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 
@@ -199,7 +199,17 @@ def create_access_token(data: dict, expires_delta: timedelta = timedelta(days=7)
 def decode_access_token(token: str):
     try:
         payload = jwt.decode(token, secret_key, algorithms=[algorithm])
-        return payload
+        # 檢查token是否在有效期內（七天）
+
+		# 避免aws時區造成問題
+        now = datetime.utcnow()  # 使用UTC時間比對，且沒有時區信息
+        exp = datetime.fromtimestamp(payload['exp'], tz=timezone.utc).replace(tzinfo=None)  # 轉換為沒有時區信息的時間
+        
+        if now < exp:
+            return payload
+        else:
+            return None
+		
     except jwt.ExpiredSignatureError: # 驗證是否在有效期七天內
         return None
     except jwt.InvalidTokenError: 

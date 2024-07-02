@@ -326,8 +326,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 let signInEnroll = document.getElementById('signInEnroll');
                 signInEnroll.textContent = '登出帳戶';
 
-                // show log in succeed
-                location.reload();
+                Promise.resolve().then(() => {
+                    
+                    location.reload();
+                    
+                });
 
             }
 
