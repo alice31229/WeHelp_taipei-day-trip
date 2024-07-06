@@ -227,7 +227,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function showSignInButton() {
         signInEnroll.textContent = "登入/註冊";
-        signInEnroll.id = "signInEnroll";
     }
 
     // log out -> remove localStorage token
@@ -236,7 +235,6 @@ document.addEventListener("DOMContentLoaded", function () {
         checkLogin();  // update log out -> log-in/enroll
     }
 
-    //checkLogin();
 
     // enroll sign-in switch
     let enroll = document.querySelector('.pop-background-color-enroll');
@@ -295,7 +293,7 @@ document.addEventListener("DOMContentLoaded", function () {
             
             //if (!response.ok) {
             if (!response.ok || !tokenJson.token) {
-                //let errorMessage = decodeURIComponent(tokenJson.message);
+                
                 let errorMessage = tokenJson.message;
 
                 let adjustHeight = document.querySelector('.pop-up-sign-in');
@@ -308,7 +306,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 // Add event listener to hide error message on clicking other parts of the sign-in dialog
                 adjustHeight.addEventListener('click', function() {
                     errorMsgShow.style.display = 'none';
-                    //adjustHeight.style.height = '275px';
                     adjustHeightAll();
                 }, { once: true });
 
@@ -324,8 +321,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 // 登入/註冊 -> 登出帳戶
                 let signInEnroll = document.getElementById('signInEnroll');
-                signInEnroll.textContent = '登出帳戶';
+                signInEnroll.textContent = '登出帳號';
 
+                // 確保token已存入localStorage後才重整頁面
                 Promise.resolve().then(() => {
                     
                     location.reload();
@@ -384,7 +382,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 // Add event listener to hide error message on clicking other parts of the sign-in dialog
                 adjustHeight.addEventListener('click', function() {
                     enrollResult.style.display = 'none';
-                    //adjustHeight.style.height = '332px';
                     adjustHeightAll();
                 }, { once: true });
 
@@ -400,7 +397,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 // Add event listener to hide error message on clicking other parts of the sign-in dialog
                 adjustHeight.addEventListener('click', function() {
                     enrollResult.style.display = 'none';
-                    //adjustHeight.style.height = '332px';
                     adjustHeightAll();
                 }, { once: true });
 
@@ -583,4 +579,41 @@ document.addEventListener("DOMContentLoaded", function () {
         footer.style.position = '';
         window.location.href = '/';
     });
+
+    // 看購物車 預定行程
+    let goBooking = document.querySelector('#bookAttraction');
+    goBooking.addEventListener('click', async event => {
+
+        event.preventDefault();
+
+        // 登入驗證
+        try {
+            const token = localStorage.getItem("authToken");
+            const getResponse = await fetch('/api/user/auth', {
+                method: 'GET',
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+    
+            let result = await getResponse.json();
+    
+            if (!result.data) { // not log in
+    
+                let signIn = document.querySelector('.pop-background-color-sign-in');
+                signIn.style.display = 'flex';
+
+            } else { // log in
+
+                window.location.assign('/booking');
+
+            }
+
+        } catch (e) {
+            console.log(e);
+        }
+
+    })
+
 });

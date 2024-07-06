@@ -33,6 +33,15 @@ function ProcessImgs(imgs) {
 };
 
 
+// use re to extract the attraction id
+function extractNumberFromPath(pathname) {
+    
+    const match = pathname.match(/\/(\d+)$/);
+    
+    return match ? match[1] : null;
+}
+
+
 async function LoadAttraction() {
 
     try {
@@ -176,6 +185,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 } else {
                     throw new Error("Failed to verify token");
                 }
+
             } catch (error) {
                 console.error("Error verifying token:", error);
                 localStorage.removeItem("authToken");
@@ -189,7 +199,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         function showSignInButton() {
             signInEnroll.textContent = "登入/註冊";
-            signInEnroll.id = "signInEnroll";
         }
 
         // log out -> remove localStorage token
@@ -270,7 +279,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     // Add event listener to hide error message on clicking other parts of the sign-in dialog
                     adjustHeight.addEventListener('click', function() {
                         errorMsgShow.style.display = 'none';
-                        //adjustHeight.style.height = '275px';
                         adjustHeightAll();
                     }, { once: true });
 
@@ -286,12 +294,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     // 登入/註冊 -> 登出帳戶
                     let signInEnroll = document.getElementById('signInEnroll');
-                    signInEnroll.textContent = '登出帳戶';
+                    signInEnroll.textContent = '登出帳號';
 
+                    // 確保token已存入localStorage後才重整頁面
                     Promise.resolve().then(() => {
                     
                         location.reload();
-                        
+
                     });
 
                 }
@@ -346,7 +355,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     // Add event listener to hide error message on clicking other parts of the sign-in dialog
                     adjustHeight.addEventListener('click', function() {
                         enrollResult.style.display = 'none';
-                        //adjustHeight.style.height = '332px';
                         adjustHeightAll();
                     }, { once: true });
 
@@ -362,7 +370,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     // Add event listener to hide error message on clicking other parts of the sign-in dialog
                     adjustHeight.addEventListener('click', function() {
                         enrollResult.style.display = 'none';
-                        //adjustHeight.style.height = '332px';
                         adjustHeightAll();
                     }, { once: true });
 
@@ -437,8 +444,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         })
 
-
-        //showSlides(counter); // Initialize the slideshow
         plusSlides(counter);
 
         // checkbox 上半天 $2000 下半天 $2500
@@ -461,9 +466,150 @@ document.addEventListener("DOMContentLoaded", function () {
 
         updateDisplayText();
 
+
     }).catch(error => {
         console.error('Error loading attraction:', error);
     });
+
+
+
+    // click 開始預定行程
+    // 是 -> POST: /api/booking -> booking page
+    // 否 -> sign in dialog 
+    let BookBtn = document.querySelector('.start_book');
+    BookBtn.addEventListener('click', async (event) => {
+
+        event.preventDefault();
+        
+
+        // 查看是否登入 
+        try {
+            const token = localStorage.getItem("authToken");
+            const getResponse = await fetch('/api/user/auth', {
+                method: 'GET',
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+    
+            let result = await getResponse.json();
+    
+            if (!result.data) { // not log in
+    
+                let signIn = document.querySelector('.pop-background-color-sign-in');
+                signIn.style.display = 'flex';
+
+            } else { // log in
+
+                let attractionId = extractNumberFromPath(window.location.pathname);
+                attractionId = parseInt(attractionId);
+
+                let time = document.querySelector('input[name="time"]:checked').value;
+                
+                if (time == '上半天') {
+                    time = 'morning';
+                } else {
+                    time = 'afternoon';
+                }
+
+
+                let priceOri = document.querySelector('.fee').textContent;
+                priceOri = priceOri.match(/\d{1,3}(,\d{3})*/)[0];
+                priceOri = priceOri.replace(/,/g, '');
+                let price = parseInt(priceOri);
+
+                let date = document.querySelector('.DateSetMargin').value;
+    
+                if (date != ''){
+
+
+                    const bookingNew = await fetch('/api/booking', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            attractionId: attractionId,
+                            date: date,
+                            time: time,
+                            price: price
+                        }),
+                        headers: {
+                            "Authorization": `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                        }
+                    })
+
+                    let bookingResult = await bookingNew.json();
+
+                    if (bookingResult.ok) {
+
+                        window.location.assign('/booking');
+
+                    } else {
+
+                        console.log(`${bookingResult.message}`);
+
+                    }
+                
+                } else {
+
+                    let date = document.querySelector('.DateSetMargin');
+                    date.classList.add('error');
+                    date.addEventListener('input', event => {
+                        if (date.value != '') {
+                            date.classList.remove('error');
+                        }
+                    })
+
+                }
+
+            }
+        } catch(e) {
+
+            console.log('check sign in error');
+
+        }
+
+
+    })
+
+    // 看購物車 預定行程
+    let goBooking = document.querySelector('#bookAttraction');
+    goBooking.addEventListener('click', async event => {
+
+        event.preventDefault();
+
+        // 登入驗證
+        try {
+            const token = localStorage.getItem("authToken");
+            const getResponse = await fetch('/api/user/auth', {
+                method: 'GET',
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+    
+            let result = await getResponse.json();
+    
+            if (!result.data) { // not log in
+    
+                let signIn = document.querySelector('.pop-background-color-sign-in');
+                signIn.style.display = 'flex';
+
+            } else { // log in
+
+                // fix '/attraction/booking' issue
+                let currentUrl = window.location.href;
+                let newUrl = currentUrl.replace(/\/attraction\/.*/, '/booking');
+                window.location.assign(newUrl);
+
+            }
+
+        } catch (e) {
+            console.log(e);
+        }
+
+    })
 
 });
 

@@ -3,9 +3,132 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Booking</title>
+  <title>預定景點行程</title>
+  <link rel="stylesheet" href="/static/css/booking.css">
+  <script src="/static/js/booking.js"></script>
 </head>
 <body>
-  
+  <div class='header'>
+    <div class="thousand_twoHundred_navbar">
+      <div class='title'>台北一日遊</div> 
+      <div class='items'>
+        <div class='item' id="bookAttraction">預定行程</div>
+        <div class='item' id="signInEnroll">登出帳號</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pop-background-color-sign-in">
+    <div class="pop-up-sign-in">
+      <div class="decorator_bar"></div>
+      <img src="/static/photo_icon/close.png" class="close-pop-sign-in" alt="close_sign_in">
+      <div class="sign_in_title">登入會員帳號</div>
+      <form id="signin">
+        <input type="text" id="emailID" name="email" placeholder="輸入電子信箱">
+        <br>
+        <input type="password" id="passwordID" name="password" placeholder="輸入密碼" autocomplete="off">
+        <br>
+        <button type="submit" class="logInBtn">登入帳號</button>
+      </form>
+      <div class="error-message-sign-in"></div>
+      <div class="enroll-dialog">還沒有帳戶？點此註冊～</div>
+    </div>
+  </div>
+
+  <div class="pop-background-color-enroll">
+    <div class="pop-up-enroll">
+      <div class="decorator_bar"></div>
+      <img src="/static/photo_icon/close.png" class="close-pop-enroll" alt="close_enroll">
+      <div class="enroll_title">註冊會員帳號</div>
+      <form id="enroll">
+        <input type="text" id="nameID" name="name" placeholder="輸入姓名">
+        <br>
+        <input type="text" id="emailID-enroll" name="email-enroll" placeholder="輸入電子信箱">
+        <br>
+        <input type="password" id="passwordID-enroll" name="password-enroll" placeholder="輸入密碼" autocomplete="off">
+        <br>
+        <button type="submit" class="enrollBtn">註冊新帳戶</button>
+      </form>
+      <div class="message-enroll"></div>
+      <div class="sign-in-dialog">已經有帳戶了？點此登入～</div>
+    </div>
+  </div>
+
+  <div class="title_style_up"></div>
+
+  <div class="noBookingRecord">目前沒有任何待預訂的行程，<a href="/">來去看台北一日遊景點～</a></div>
+
+  <div class="img_schedule">
+
+    <div class="thousand_twoHundred">
+      <div class="left">
+        <div class="img"> <!--景點第一張圖片-->
+          <img src="" alt="attractionImage" class="attraction_img">
+        </div>
+        
+        <div class="site_info">
+          <div class="green_font" id="name">台北一日遊：</div>
+          <div class="schedule">
+            <div class="marginBottom">
+              <span class="common_style_site_up">日期：</span>
+              <span class="no_bold_style_up" id="date"></span>
+            </div>
+            <div class="marginBottom">
+              <span class="common_style_site_up">時間：</span> 
+              <span class="no_bold_style_up" id="time"></span>
+            </div>
+            <div class="marginBottom">
+              <span class="common_style_site_up">費用：</span>
+              <span class="no_bold_style_up" id="fee"></span>
+            </div>
+            <div class="marginBottom">
+              <span class="common_style_site_up">地點：</span>
+              <span class="no_bold_style_up" id="address"></span>
+            </div>
+          </div>
+          <!-- <div class="garbage_can"><img src="/static/photo_icon/delete.png" alt="deleteBooking"></div> -->
+        </div>
+      </div>
+
+      <div class="garbage_can"><img src="/static/photo_icon/delete.png" alt="deleteBooking"></div>
+    </div>
+  </div>
+
+  <hr class="line" id="upper_line">
+
+  <div class="title_style">您的聯絡資訊</div>
+  <form class="form">
+    <span class="no_bold_style">聯絡姓名：</span><input type="text" class="input_border_style" id="inputName" placeholder="">
+    <br>
+    <span class="no_bold_style">聯絡信箱：</span><input type="text" class="input_border_style" id="inputEmail" placeholder="">
+    <br>
+    <span class="no_bold_style">手機號碼：</span><input type="text" class="input_border_style" id="inputPhone">
+  </form>
+  <div class="common_style_site_middle">請保持手機暢通，準時到達，導覽人員將用手機與您聯繫，務必留下正確的聯絡方式。</div>
+
+  <hr class="line">
+
+  <div class="title_style">信用卡付款資訊</div>
+  <form class="creditForm">
+    <span class="no_bold_style">卡片號碼：</span><input type="text" placeholder="**** **** ****" class="input_border_style" id="creditNumber">
+    <br>
+    <span class="no_bold_style">過期時間：</span><input type="text" placeholder="MM / YY" class="input_border_style" id="creditExpire">
+    <br>
+    <span class="no_bold_style">驗證密碼：</span><input type="text" placeholder="CVV" class="input_border_style" id="creditCVV">
+  </form>
+
+  <hr class="line">
+
+  <div class="check_book">
+    <div class="div-right">
+      <div class="common_style_site" id="check_book_money"></div>
+      <button class="check_book_btn">確認訂購並付款</button>
+    </div>
+  </div>
+
+  <footer class="copyRight">
+    <img src="/static/photo_icon/footer.png" alt="copyRight" class="copy_right">
+  </footer>
+
 </body>
 </html>

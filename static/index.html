@@ -11,11 +11,11 @@
   
   <div class='header'>
     <div class="thousand_twoHundred_navbar">
-        <div class='title'>台北一日遊</div> 
-        <div class='items'>
-            <div class='item'>預定行程</div>
-            <div class='item' id="signInEnroll">登入/註冊</div>
-        </div>
+      <div class='title'>台北一日遊</div> 
+      <div class='items'>
+        <div class='item' id="bookAttraction">預定行程</div>
+        <div class='item' id="signInEnroll">登入/註冊</div>
+      </div>
     </div>
   </div>
 
@@ -61,16 +61,16 @@
 
     <div class="thousand_twoHundred">
 
-        <div class="vertical">
-          <div class="relax">輕鬆享受台北一日悠閒</div> 
-          <div class="explore">探索每個角落，體驗城市的深度旅遊行程</div>
-          <div class="form-keyword-search">
-              <form action="/api/attractions">
-                  <input type="text" name='keyword' class="searchKeyword_input" placeholder="輸入景點名稱查詢">
-                  <button class="searchKeyword_button"><img src="/static/photo_icon/search.png" alt="iconSearch" style="width: 30px; height: 30px;"></button>
-              </form>
-          </div>
+      <div class="vertical">
+        <div class="relax">輕鬆享受台北一日悠閒</div> 
+        <div class="explore">探索每個角落，體驗城市的深度旅遊行程</div>
+        <div class="form-keyword-search">
+          <form action="/api/attractions">
+            <input type="text" name='keyword' class="searchKeyword_input" placeholder="輸入景點名稱查詢">
+            <button class="searchKeyword_button"><img src="/static/photo_icon/search.png" alt="iconSearch" style="width: 30px; height: 30px;"></button>
+          </form>
         </div>
+      </div>
         
     </div>
   </div>
@@ -78,18 +78,14 @@
   <div class="mrt_sorted">
 
     <img src="/static/photo_icon/mrt_left_Default.png" alt="left-arrow" class="left-arrow">
-    <div class="mrts">
-
-    </div>
+    <div class="mrts"></div>
     <img src="/static/photo_icon/mrt_right_Default.png" alt="right-arrow" class="right-arrow">
     
   </div>
 
   <h3 class="noAttraction">查無相關景點，請再試試別的～</h3>
 
-  <div class="load_attractions">
-
-  </div>
+  <div class="load_attractions"></div>
 
   <div id="loading"></div>
 
