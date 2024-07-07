@@ -48,7 +48,7 @@ body {
     margin: 10px 10px 10px 10px;
 }
 
-#signInEnroll {
+#signInEnroll, #bookAttraction {
     cursor: pointer;
 }
 

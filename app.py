@@ -29,7 +29,6 @@ async def thankyou(request: Request):
 
 import os
 import jwt
-import math
 import json
 import uvicorn
 import bcrypt
@@ -50,8 +49,65 @@ db = mysql.connector.pooling.MySQLConnectionPool(
     password=mysql_secret_code,
 	database="TaipeiTrip")
 
+
 # user enroll or member log in/out JWT settings
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+# password handle
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+secret_key = os.environ.get('SECRET_KEY')
+algorithm = os.environ.get('ALGORITHM')
+
+def encode_password(password: str) -> str:
+
+	hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+	return hashed.decode('utf-8')
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
+# token時效為七天
+def create_access_token(data: dict, expires_delta: timedelta = timedelta(days=7)):
+	to_encode = data.copy()
+	expire = datetime.now() + expires_delta
+	# to_encode.update({"exp": expire})
+	# encoded_jwt = jwt.encode(to_encode, secret_key, algorithm=algorithm)
+	encoded_jwt = jwt.encode({**to_encode, "exp": expire}, secret_key, algorithm=algorithm)
+	return encoded_jwt
+
+def decode_access_token(token: str):
+    try:
+        payload = jwt.decode(token, secret_key, algorithms=[algorithm])
+        # 檢查token是否在有效期內（七天）
+
+		# 避免aws時區造成問題
+        now = datetime.utcnow()  # 使用UTC時間比對，且沒有時區資訊
+        exp = datetime.fromtimestamp(payload['exp'], tz=timezone.utc).replace(tzinfo=None)  # 轉換為沒有時區資訊的時間
+        
+        if now < exp:
+            return payload
+        else:
+            return None
+		
+    except jwt.ExpiredSignatureError: # 驗證是否在有效期七天內
+        return None
+    except jwt.InvalidTokenError: 
+        return None
+	
+# 登入錯誤驗證class
+# 自定義的 HTTPException
+class CustomHTTPException(HTTPException):
+    def __init__(self, status_code: int, detail: str):
+        super().__init__(status_code=status_code, detail=detail)
+        self.content = {"error": True, "message": detail}
+
+# 登入驗證
+def login_required(token: str = Depends(oauth2_scheme)):
+	payload = decode_access_token(token)
+	if payload is None:
+		raise CustomHTTPException(status_code=403, detail='尚未登入，預定行程存取遭拒')
+	return payload
 
 
 # user or member info
@@ -65,6 +121,13 @@ class member_info(BaseModel): # log in
 	email: str
 	password: str
 
+# member booking schedule info
+class schedule_info(BaseModel):
+	attractionId: int
+	date: str
+	time: str
+	price: int
+
 
 # homepage keyword search data 
 def get_12_attractions_by_keyword(kw, page=0):
@@ -73,7 +136,7 @@ def get_12_attractions_by_keyword(kw, page=0):
 	# sql = "SELECT * FROM attractions WHERE name like %s OR description like %s;"
 
 	# 用來完全比對捷運站名稱、或模糊比對景點名稱的關鍵字，沒有給定則不做篩選
-	sql = "SELECT * FROM (SELECT * FROM attractions WHERE name like %s OR mrt = %s) AS subquery LIMIT %s, %s;"
+	sql = '''SELECT * FROM (SELECT * FROM attractions WHERE name like %s OR mrt = %s) AS subquery LIMIT %s, %s;'''
 
 	page_size = 24 # judge the nextPage
 	start = page * 12
@@ -110,13 +173,11 @@ def get_12_attractions_by_keyword(kw, page=0):
 			return {'error': True,
 					'message': '景點資料超出頁數'}
 
-
 	except mysql.connector.Error as err:
 
 		print(f"Error: {err}")
 		return {'error': True,
 				'message': '景點資料輸出錯誤'}
-
 
 	finally:
 
@@ -134,7 +195,7 @@ def get_12_attractions_by_page(page):
 		page_size = 24 # judge the nextPage
 		start = page * 12
 
-		sql_12 = 'SELECT * FROM attractions limit %s, %s'
+		sql_12 = '''SELECT * FROM attractions limit %s, %s;'''
 		Cursor.execute(sql_12, (start, page_size))
 		demand_attractions_raw = Cursor.fetchall()
 
@@ -159,61 +220,16 @@ def get_12_attractions_by_page(page):
 				    'message': '請輸入涵蓋景點資料的正確頁數'}
 			
 
-
 	except mysql.connector.Error as err:
 
 		print(f"Error: {err}")
 		return {'error': True,
 				'message': '景點資料輸出錯誤'}
 
-
 	finally:
 
 		con.close()
 		Cursor.close()
-
-
-# password handle
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-secret_key = os.environ.get('SECRET_KEY')
-algorithm = os.environ.get('ALGORITHM')
-
-def encode_password(password: str) -> str:
-
-	hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-	return hashed.decode('utf-8')
-
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
-
-# token時效為七天
-def create_access_token(data: dict, expires_delta: timedelta = timedelta(days=7)):
-	to_encode = data.copy()
-	expire = datetime.now() + expires_delta
-	# to_encode.update({"exp": expire})
-	# encoded_jwt = jwt.encode(to_encode, secret_key, algorithm=algorithm)
-	encoded_jwt = jwt.encode({**to_encode, "exp": expire}, secret_key, algorithm=algorithm)
-	return encoded_jwt
-
-def decode_access_token(token: str):
-    try:
-        payload = jwt.decode(token, secret_key, algorithms=[algorithm])
-        # 檢查token是否在有效期內（七天）
-
-		# 避免aws時區造成問題
-        now = datetime.utcnow()  # 使用UTC時間比對，且沒有時區信息
-        exp = datetime.fromtimestamp(payload['exp'], tz=timezone.utc).replace(tzinfo=None)  # 轉換為沒有時區信息的時間
-        
-        if now < exp:
-            return payload
-        else:
-            return None
-		
-    except jwt.ExpiredSignatureError: # 驗證是否在有效期七天內
-        return None
-    except jwt.InvalidTokenError: 
-        return None
 
 
 # 登入帳號
@@ -225,7 +241,7 @@ async def sign_in(member_info: member_info):
 
 	try:
 
-		query = "SELECT id, name, email, password FROM members WHERE email = %s;"
+		query = '''SELECT id, name, email, password FROM members WHERE email = %s;'''
 		account = (member_info.email,)
 	
 		con = db.get_connection()
@@ -262,9 +278,9 @@ async def sign_in(member_info: member_info):
 
 	except Exception as e:
 
-		raise HTTPException(status_code=500, detail=str(e))
+		raise CustomHTTPException(status_code=500, detail=str(e))
+		#raise HTTPException(status_code=500, detail=str(e))
 		
-
 	finally:
 
 		Cursor.close()
@@ -272,6 +288,15 @@ async def sign_in(member_info: member_info):
 
 
 # 登入會員資訊
+# @app.get("/api/user/auth")
+# async def get_user_info(payload: dict = Depends(login_required)):
+
+# 	response_json = {"data": {"id": payload["user_id"],
+# 						      "name": payload["name"],
+# 						      "email": payload["email"]}}
+
+# 	return response_json
+
 @app.get("/api/user/auth")
 async def get_user_info(token: str = Depends(oauth2_scheme)):
 
@@ -316,7 +341,7 @@ async def enroll_account(user_info: user_info):
 
 		else:
 
-			query = "SELECT * FROM members WHERE email = %s;"
+			query = '''SELECT * FROM members WHERE email = %s;'''
 			Email = (user_info.email,)
 			Cursor.execute(query, Email)
 			
@@ -330,7 +355,7 @@ async def enroll_account(user_info: user_info):
 			
 			else:
 
-				query = "INSERT INTO members (name, email, password) VALUES (%s, %s, %s);"
+				query = '''INSERT INTO members (name, email, password) VALUES (%s, %s, %s);'''
 				encoded_password = encode_password(user_info.password)
 				apply_form = (user_info.name, user_info.email, encoded_password)
 				Cursor.execute(query, apply_form)
@@ -342,7 +367,8 @@ async def enroll_account(user_info: user_info):
 
 	except Exception as e:
 
-		raise HTTPException(status_code=500, detail=str(e))
+		raise CustomHTTPException(status_code=500, detail=str(e))
+		#raise HTTPException(status_code=500, detail=str(e))
 
 	finally:
 
@@ -381,7 +407,7 @@ async def get_target_attraction_info(id: int):
 		con = db.get_connection()
 		Cursor = con.cursor(dictionary=True)
 
-		search_attraction = 'SELECT * FROM attractions WHERE id = %s;'
+		search_attraction = '''SELECT * FROM attractions WHERE id = %s;'''
 		target_ID = (id,)
 		Cursor.execute(search_attraction, target_ID)
 		target_attraction_raw = Cursor.fetchall()
@@ -402,14 +428,12 @@ async def get_target_attraction_info(id: int):
 							   'message': '無此景點'}
 
 			return attraction_json
-	
 
 	except mysql.connector.Error as err:
 
 		print(f"Error: {err}")
 		return {'error': True,
 				'message': '景點資料輸出錯誤'}
-
 
 	finally:
 		
@@ -445,6 +469,139 @@ async def get_mrt_info():
     	
 		return {'error': True,
 			    'message': '捷運站資料輸出錯誤'}
+
+	finally:
+
+		con.close()
+		Cursor.close()
+
+
+# 行程預定 路由
+@app.get("/api/booking") # 尚未下單的預定行程
+async def get_booking_info(payload: dict = Depends(login_required)):
+	
+	response_json = {"data": None}
+
+	try:
+
+		sql = '''SELECT a.id, a.name, a.address, a.images, b.date, b.time, b.price
+				 FROM attractions AS a
+				 INNER JOIN bookings AS b
+				 ON a.id = b.attractionId
+				 WHERE b.memberId = %s;'''
+		
+		con = db.get_connection()
+		Cursor = con.cursor(dictionary=True)
+		member_id = (payload["user_id"],)
+		Cursor.execute(sql, member_id)
+		booking_info = Cursor.fetchall()
+
+		if len(booking_info) == 0:
+
+			return response_json
+
+		else:
+
+			attraction = {"attraction":{}}
+			attraction['attraction']['id'] = int(booking_info[0]['id'])
+			attraction['attraction']['name'] = booking_info[0]['name']
+			attraction['attraction']['address'] = booking_info[0]['address']
+			attraction['attraction']['image'] = json.loads(booking_info[0]['images'])[0]
+
+			response_json['data'] = attraction
+
+			response_json['data']['date'] = booking_info[0]['date'].strftime('%Y-%m-%d')
+			response_json['data']['time'] = booking_info[0]['time']
+			response_json['data']['price'] = booking_info[0]['price']
+
+			return response_json
+
+	except Exception as e:
+
+		raise CustomHTTPException(status_code=500, detail=str(e))
+		#raise HTTPException(status_code=500, detail=str(e))
+
+	finally:
+
+		con.close()
+		Cursor.close()
+
+
+# 建立新的預定行程
+@app.post("/api/booking")
+async def add_new_schedule(schedule_info: schedule_info, payload: dict = Depends(login_required)):
+
+	response_json = {}
+
+	try:
+
+		if schedule_info.attractionId is None or schedule_info.date == '' or schedule_info.time == '' or schedule_info.price is None:
+
+			raise CustomHTTPException(status_code=400, detail='請提供完整預定行程資訊')
+
+		# check the member having booking record or not
+		con = db.get_connection()
+		Cursor = con.cursor(dictionary=True)
+
+		check_query = '''SELECT * FROM bookings WHERE memberId = %s;'''
+		Cursor.execute(check_query, (payload['user_id'],))
+		yes_or_no = Cursor.fetchall()
+
+		if len(yes_or_no) == 0:
+
+			query = '''INSERT INTO bookings (memberId, attractionId, date, time, price) VALUES (%s, %s, %s, %s, %s);'''
+			
+			schedule_data = (payload['user_id'], schedule_info.attractionId, schedule_info.date, schedule_info.time, schedule_info.price) # payload['user_id'] ? 
+			Cursor.execute(query, schedule_data)
+			con.commit()
+
+		else:
+
+			update_query = '''UPDATE bookings 
+							  SET attractionId = %s, date = %s, time = %s, price = %s
+							  WHERE memberId = %s;'''
+			schedule_data = (schedule_info.attractionId, schedule_info.date, schedule_info.time, schedule_info.price, payload['user_id'])  
+			Cursor.execute(update_query, schedule_data)
+			con.commit()
+
+
+		response_json['ok'] = True
+
+		return response_json
+	
+	except Exception as e:
+
+		raise CustomHTTPException(status_code=500, detail=str(e))
+		#raise HTTPException(status_code=500, detail=str(e))
+	
+	finally:
+
+		con.close()
+		Cursor.close()
+
+
+# 刪除預定行程
+@app.delete("/api/booking")
+async def remove_schedule(payload: dict = Depends(login_required)):
+
+	response_json = {"ok": True}
+
+	try:
+
+		# 因為在設定裡一個會員只會有一筆未付款的預定行程
+		query = '''DELETE FROM bookings WHERE memberId = %s;'''
+		con = db.get_connection()
+		Cursor = con.cursor(dictionary=True)
+		member_id = (payload['user_id'],) # payload['user_id'] ? 
+		Cursor.execute(query, member_id)
+		con.commit()
+
+		return response_json
+
+	except Exception as e:
+
+		raise CustomHTTPException(status_code=500, detail=str(e))
+		#raise HTTPException(status_code=500, detail=str(e))
 
 	finally:
 
