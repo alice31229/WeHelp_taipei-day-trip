@@ -359,83 +359,92 @@ document.addEventListener("DOMContentLoaded", async function () {
     orderBtn.addEventListener('click', async(event) => {
         event.preventDefault();
 
-        const loader = document.querySelector(".loader");
-        loader.classList.remove("loader--hidden");
-
         let [correct, prime] = await onSubmit();
 
-        if (checkLogIn() && correct) {
+        if (checkLogIn()) {
             
-            try {
+            if (correct) {
 
-                let requestBookingData = {'prime':'', 'order':{'price': '', 'trip':{'attraction': {'id': '', 'name': '', 'address': '', 'image': ''}}, 'date': '', 'time': '', 'contact': {'name': '', 'email': '', 'phone': ''}}};
-                
-                // order
-                let price = document.querySelector('#fee').textContent;
-                let priceOri = price.match(/\d{1,3}(,\d{3})*/)[0];
-                priceOri = priceOri.replace(/,/g, '');
-                price = parseInt(priceOri);
+                try {
 
-                let attrId = document.querySelector('.site_info').id;
-                
-                let attrName = document.querySelector('#name').textContent;
-                const parts = attrName.split('：');
-                attrName = parts.length > 1 ? parts[1].trim() : '';
-                
-                let attrAddress = document.querySelector('#address').textContent;
-                let attrImage = document.querySelector('.attraction_img').src;
-                let date = document.querySelector('#date').textContent;
-                
-                let time = document.querySelector('#time').textContent;
-                if (time == '早上9點到下午4點') {
-                    time = 'morning';
-                } else if (time == '下午2點到晚上9點') {
-                    time = 'afternoon';
-                }
+                    const loader = document.querySelector(".loader");
+                    loader.classList.remove("loader--hidden");
 
-                let name = document.querySelector('#inputName').value;
-                let email = document.querySelector('#inputEmail').value;
-                let phone = document.querySelector('#inputPhone').value;
+                    let requestBookingData = {'prime':'', 'order':{'price': '', 'trip':{'attraction': {'id': '', 'name': '', 'address': '', 'image': ''}}, 'date': '', 'time': '', 'contact': {'name': '', 'email': '', 'phone': ''}}};
+                    
+                    // order
+                    let price = document.querySelector('#fee').textContent;
+                    let priceOri = price.match(/\d{1,3}(,\d{3})*/)[0];
+                    priceOri = priceOri.replace(/,/g, '');
+                    price = parseInt(priceOri);
 
-                // get prime
-                requestBookingData['prime'] = prime;
-                requestBookingData['order']['price'] = price;
-                requestBookingData['order']['trip']['date'] = date;
-                requestBookingData['order']['trip']['time'] = time;
-                requestBookingData['order']['trip']['attraction']['id'] = attrId;
-                requestBookingData['order']['trip']['attraction']['name'] = attrName;
-                requestBookingData['order']['trip']['attraction']['address'] = attrAddress;
-                requestBookingData['order']['trip']['attraction']['image'] = attrImage;
-                requestBookingData['order']['contact']['name'] = name;
-                requestBookingData['order']['contact']['email'] = email;
-                requestBookingData['order']['contact']['phone'] = phone;
-
-
-                let token = localStorage.getItem("authToken");
-
-                const postResponse = await fetch('/api/orders', {
-                    method: "POST",
-                    body: JSON.stringify(requestBookingData),
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json"
+                    let attrId = document.querySelector('.site_info').id;
+                    
+                    let attrName = document.querySelector('#name').textContent;
+                    const parts = attrName.split('：');
+                    attrName = parts.length > 1 ? parts[1].trim() : '';
+                    
+                    let attrAddress = document.querySelector('#address').textContent;
+                    let attrImage = document.querySelector('.attraction_img').src;
+                    let date = document.querySelector('#date').textContent;
+                    
+                    let time = document.querySelector('#time').textContent;
+                    if (time == '早上9點到下午4點') {
+                        time = 'morning';
+                    } else if (time == '下午2點到晚上9點') {
+                        time = 'afternoon';
                     }
-                })
 
-                let result = await postResponse.json();
+                    let name = document.querySelector('#inputName').value;
+                    let email = document.querySelector('#inputEmail').value;
+                    let phone = document.querySelector('#inputPhone').value;
 
-                if (result["error"]) {
-                    cardprompt.textContent = result["message"];
-                } else if (result["data"]["payment"]["status"] != 0) {
-                    cardprompt.textContent = result["data"]["payment"]["message"] + "，請再試一次";
-                } else {
-                    window.location.href = `/thankyou?number=${result["data"]["number"]}`;
+                    // get prime
+                    requestBookingData['prime'] = prime;
+                    requestBookingData['order']['price'] = price;
+                    requestBookingData['order']['trip']['date'] = date;
+                    requestBookingData['order']['trip']['time'] = time;
+                    requestBookingData['order']['trip']['attraction']['id'] = attrId;
+                    requestBookingData['order']['trip']['attraction']['name'] = attrName;
+                    requestBookingData['order']['trip']['attraction']['address'] = attrAddress;
+                    requestBookingData['order']['trip']['attraction']['image'] = attrImage;
+                    requestBookingData['order']['contact']['name'] = name;
+                    requestBookingData['order']['contact']['email'] = email;
+                    requestBookingData['order']['contact']['phone'] = phone;
+
+
+                    let token = localStorage.getItem("authToken");
+
+                    const postResponse = await fetch('/api/orders', {
+                        method: "POST",
+                        body: JSON.stringify(requestBookingData),
+                        headers: {
+                            "Authorization": `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                        }
+                    })
+
+                    let result = await postResponse.json();
+
+                    if (result["error"]) {
+                        cardprompt.textContent = result["message"];
+                    } else if (result["data"]["payment"]["status"] != 0) {
+                        cardprompt.textContent = result["data"]["payment"]["message"] + "，請再試一次";
+                    } else {
+                        window.location.href = `/thankyou?number=${result["data"]["number"]}`;
+                    }
+
+
+                } catch (e) {
+                    console.log(e);
                 }
 
+            } else {
 
-            } catch (e) {
-                console.log(e);
+                console.log('input error');
+
             }
+
         } else{
 
             localStorage.removeItem("authToken");
