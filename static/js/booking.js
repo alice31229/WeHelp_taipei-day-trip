@@ -354,6 +354,30 @@ document.addEventListener("DOMContentLoaded", async function () {
         });
     }
 
+    let phoneInput = document.querySelector('#inputPhone');
+    let errorText = document.querySelector('.prompt');
+    phoneInput.addEventListener('input', () => {
+        if (phoneInput.value != '') {
+            errorText.textContent = '';
+        }
+    })
+
+    let cardNumInput = document.querySelector('#card-number');
+    let cardDateInput = document.querySelector('#card-expiration-date');
+    let ccvInput = document.querySelector('#card-ccv');
+    let cardErrorText = document.querySelector('.cardprompt');
+
+    function checkInputs() {
+        if (cardNumInput.value != '' && cardDateInput.value != '' && ccvInput.value != '') {
+            cardErrorText.textContent = '';
+        }
+    }
+
+    cardNumInput.addEventListener('input', checkInputs);
+    cardDateInput.addEventListener('input', checkInputs);
+    ccvInput.addEventListener('input', checkInputs);
+
+
     // click ordering the attraction buttom
     let orderBtn = document.querySelector('.check_book_btn');
     orderBtn.addEventListener('click', async(event) => {
