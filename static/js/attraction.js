@@ -137,10 +137,14 @@ document.addEventListener("DOMContentLoaded", function () {
         let signInEnroll = document.getElementById('signInEnroll');
         signInEnroll.addEventListener('click', function() {
             if (signInEnroll.textContent === '登入/註冊'){
+                const fadeElement = document.getElementById('fade-sign-in');
+                fadeElement.classList.add('show');
                 signIn.style.display = 'flex';
             }
         })
         closeSignIn.addEventListener('click', function(){
+            const fadeElement = document.getElementById('fade-sign-in');
+            fadeElement.classList.remove('show');
             clearInputValue();
             adjustHeightAll();
             signIn.style.display = 'none';
@@ -149,6 +153,8 @@ document.addEventListener("DOMContentLoaded", function () {
             if (event.target === signIn) {
 
                 // if error message shows -> hide
+                const fadeElement = document.getElementById('fade-sign-in');
+                fadeElement.classList.remove('show');
                 let errorShow = document.querySelector('.error-message-sign-in');
                 errorShow.style.display = 'none';
                 clearInputValue();
@@ -229,12 +235,16 @@ document.addEventListener("DOMContentLoaded", function () {
             adjustHeightAll();
         })
         closeEnroll.addEventListener('click', function() {
+            const fadeElement = document.getElementById('fade-sign-in');
+            fadeElement.classList.remove('show');
             enroll.style.display = 'none';
             clearInputValue();
             adjustHeightAll();
         })
         enroll.addEventListener('click', function(event) {
             if (event.target === enroll) {
+                const fadeElement = document.getElementById('fade-sign-in');
+                fadeElement.classList.remove('show');
                 let enrollShow = document.querySelector('.message-enroll');
                 enrollShow.style.display = 'none';
                 enroll.style.display = 'none';
@@ -289,6 +299,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     localStorage.setItem("authToken", token);
 
                     // close sign in dilalog
+                    const fadeElement = document.getElementById('fade-sign-in');
+                    fadeElement.classList.remove('show');
                     let closeSignIn = document.querySelector('.pop-background-color-sign-in');
                     closeSignIn.style.display = 'none';
 
@@ -471,7 +483,11 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error('Error loading attraction:', error);
     });
 
-
+    // 回首頁
+    let title = document.querySelector('.title');
+    title.addEventListener('click', () => {
+        window.location.href = '/';
+    })
 
     // click 開始預定行程
     // 是 -> POST: /api/booking -> booking page
@@ -497,6 +513,8 @@ document.addEventListener("DOMContentLoaded", function () {
     
             if (!result.data) { // not log in
     
+                const fadeElement = document.getElementById('fade-sign-in');
+                fadeElement.classList.add('show');
                 let signIn = document.querySelector('.pop-background-color-sign-in');
                 signIn.style.display = 'flex';
 
@@ -554,7 +572,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     let date = document.querySelector('.DateSetMargin');
                     date.classList.add('error');
-                    date.addEventListener('input', event => {
+                    date.addEventListener('input', () => {
                         if (date.value != '') {
                             date.classList.remove('error');
                         }
@@ -593,6 +611,8 @@ document.addEventListener("DOMContentLoaded", function () {
     
             if (!result.data) { // not log in
     
+                const fadeElement = document.getElementById('fade-sign-in');
+                fadeElement.classList.add('show');
                 let signIn = document.querySelector('.pop-background-color-sign-in');
                 signIn.style.display = 'flex';
 

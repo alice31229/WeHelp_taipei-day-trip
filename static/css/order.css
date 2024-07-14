@@ -1,0 +1,142 @@
+/* 引入字體 Noto Sans TC */
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans+TC&display=swap&subset=chinese-traditional');
+
+* {
+    box-sizing: border-box;
+}
+
+.loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #666666;
+    transition: opacity 0.75s, visibility 0.75s;
+    z-index: 60;
+  }
+  
+  .loader--hidden {
+    opacity: 0;
+    visibility: hidden;
+  }
+  
+  .loader::after {
+    content: "";
+    width: 75px;
+    height: 75px;
+    border: 15px solid #dddddd;
+    border-top-color: #448899;
+    border-radius: 50%;
+    animation: loading 0.75s ease infinite;
+  }
+  
+  @keyframes loading {
+    from {
+      transform: rotate(0turn);
+    }
+    to {
+      transform: rotate(1turn);
+    }
+  }
+
+/********************/
+
+body {
+    margin: 0 auto;
+    font-family: 'Noto Sans TC', sans-serif;
+    max-width: 1920px;
+}
+
+.header {
+    position: fixed; 
+    top: 0; 
+    width: 100%;
+    background-color: #F8F8F8;
+    z-index: 30;
+} 
+
+.title {
+    cursor: pointer;
+    margin-top: 5.25px;
+    margin-bottom: 5.25px;
+    margin-left: 5px;
+    font-size: 30px; 
+    color: #448899; 
+    font-weight: 700;
+}
+
+.thousand_twoHundred_navbar {
+    max-width: 1200px; 
+    display: flex; 
+    justify-content: space-between;
+    margin: 0 auto;
+    align-items: center;
+}
+
+.items {
+    display: flex;
+    justify-content: flex-end;
+    flex: auto;
+}
+
+.item {
+    font-size: 16px;
+    color: #666666;
+    margin: 10px 10px 10px 10px;
+}
+
+#bookAttraction {
+    cursor: pointer;
+}
+
+#signInEnroll {
+    cursor: pointer;
+}
+
+.main_content {
+    display: block;
+    /* justify-content: center;
+    align-items: center; */
+    text-align: center;
+    max-width: 1200px;
+
+    margin: 100px auto; /* Ensure enough space from the header */
+    padding: 20px;
+    min-height: 100px; /* Ensure minimum height */
+}
+
+.bold_effect {
+    font-weight: 700;
+    color: #666666;
+    font-size: 25px;
+}
+
+.number, .remember {
+    font-weight: 400;
+    color: #666666;
+    font-size: 20px;
+}
+
+.buyMore {
+    color: #666666;
+    font-size: 20px;
+    margin-top: 20px;
+}
+
+.copyRight {
+    display: flex;
+    height: 104px;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+}
+
+.copy_right {
+    object-fit: cover;
+    width: 100%;
+    height: 100%
+}

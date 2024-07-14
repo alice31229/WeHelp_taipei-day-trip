@@ -28,15 +28,17 @@ async def thankyou(request: Request):
 ##################################
 
 import os
+import re
 import jwt
 import json
-import uvicorn
 import bcrypt
+import uvicorn
+import requests
 import mysql.connector
 from pydantic import BaseModel
-from datetime import datetime, timedelta, timezone
-from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
+from fastapi.security import OAuth2PasswordBearer
+from datetime import datetime, timedelta, timezone
 
 
 # MySQL settings
@@ -71,8 +73,6 @@ def verify_password(plain_password, hashed_password):
 def create_access_token(data: dict, expires_delta: timedelta = timedelta(days=7)):
 	to_encode = data.copy()
 	expire = datetime.now() + expires_delta
-	# to_encode.update({"exp": expire})
-	# encoded_jwt = jwt.encode(to_encode, secret_key, algorithm=algorithm)
 	encoded_jwt = jwt.encode({**to_encode, "exp": expire}, secret_key, algorithm=algorithm)
 	return encoded_jwt
 
@@ -117,7 +117,8 @@ class user_info(BaseModel): # register
 	email: str
 	password: str
 
-class member_info(BaseModel): # log in
+# log in
+class member_info(BaseModel): 
 	email: str
 	password: str
 
@@ -127,6 +128,11 @@ class schedule_info(BaseModel):
 	date: str
 	time: str
 	price: int
+
+# order info
+class order_info(BaseModel):
+	prime: str
+	order: dict
 
 
 # homepage keyword search data 
@@ -279,7 +285,6 @@ async def sign_in(member_info: member_info):
 	except Exception as e:
 
 		raise CustomHTTPException(status_code=500, detail=str(e))
-		#raise HTTPException(status_code=500, detail=str(e))
 		
 	finally:
 
@@ -288,15 +293,6 @@ async def sign_in(member_info: member_info):
 
 
 # 登入會員資訊
-# @app.get("/api/user/auth")
-# async def get_user_info(payload: dict = Depends(login_required)):
-
-# 	response_json = {"data": {"id": payload["user_id"],
-# 						      "name": payload["name"],
-# 						      "email": payload["email"]}}
-
-# 	return response_json
-
 @app.get("/api/user/auth")
 async def get_user_info(token: str = Depends(oauth2_scheme)):
 
@@ -368,7 +364,6 @@ async def enroll_account(user_info: user_info):
 	except Exception as e:
 
 		raise CustomHTTPException(status_code=500, detail=str(e))
-		#raise HTTPException(status_code=500, detail=str(e))
 
 	finally:
 
@@ -519,7 +514,6 @@ async def get_booking_info(payload: dict = Depends(login_required)):
 	except Exception as e:
 
 		raise CustomHTTPException(status_code=500, detail=str(e))
-		#raise HTTPException(status_code=500, detail=str(e))
 
 	finally:
 
@@ -572,7 +566,6 @@ async def add_new_schedule(schedule_info: schedule_info, payload: dict = Depends
 	except Exception as e:
 
 		raise CustomHTTPException(status_code=500, detail=str(e))
-		#raise HTTPException(status_code=500, detail=str(e))
 	
 	finally:
 
@@ -592,7 +585,7 @@ async def remove_schedule(payload: dict = Depends(login_required)):
 		query = '''DELETE FROM bookings WHERE memberId = %s;'''
 		con = db.get_connection()
 		Cursor = con.cursor(dictionary=True)
-		member_id = (payload['user_id'],) # payload['user_id'] ? 
+		member_id = (payload['user_id'],)  
 		Cursor.execute(query, member_id)
 		con.commit()
 
@@ -601,10 +594,141 @@ async def remove_schedule(payload: dict = Depends(login_required)):
 	except Exception as e:
 
 		raise CustomHTTPException(status_code=500, detail=str(e))
-		#raise HTTPException(status_code=500, detail=str(e))
 
 	finally:
 
+		con.close()
+		Cursor.close()
+
+
+# 建立新的訂單 並完成付款程序
+@app.post("/api/orders")
+def order_attraction(order_info: order_info, payload: dict = Depends(login_required)):
+
+	response_json = {}
+
+	try:
+		
+		# email and phone valid or not ; no blank contact info
+		email_pattern = re.compile("[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}")
+		phone_pattern = re.compile("^(09)[0-9]{8}$")
+
+		if not all([order_info.order['contact']['name'], order_info.order['contact']['email'], order_info.order['contact']['phone']]):
+
+			raise CustomHTTPException(status_code=400, detail='請提供完整預定行程資訊')
+		
+		elif not all([email_pattern.match(order_info.order['contact']['email']), phone_pattern.match(order_info.order['contact']['phone'])]):
+
+			raise CustomHTTPException(status_code=400, detail='請提供正確信箱、手機號碼格式')
+
+		else:
+
+			# TapPay prime 
+			order_num = datetime.utcnow().strftime('%Y%m%d%H%M%S%f')
+			req_TapPay = {
+				"prime": order_info.prime,
+				"partner_key": os.environ.get("TAPPAY_KEY"),
+				"merchant_id": "alice31229_ESUN",
+				"details": "TapPay info",
+				"amount": order_info.order['price'],
+				"order_number": order_num,
+				"cardholder": {
+					"phone_number": order_info.order['contact']['phone'],
+					"name": order_info.order['contact']['name'],
+					"email": order_info.order['contact']['email']
+				},
+				"remember": True
+			}
+
+			headers = {'content-type': 'application/json',
+			  		   'x-api-key': os.environ.get("TAPPAY_KEY")}
+			response = requests.post('https://sandbox.tappaysdk.com/tpc/payment/pay-by-prime',
+									 data=json.dumps(req_TapPay), headers=headers)
+			resp = response.json()
+			
+			if resp['status'] == 0:
+				message = '付款成功'
+			else:
+				message = '付款失敗'
+			
+
+			sql = '''INSERT INTO orders (id, memberId, memberPhone, attractionId, date, time, price, status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);'''
+			# status from tappay
+			insert_order = (order_num, payload['user_id'], order_info.order['contact']['phone'], int(order_info.order['trip']['attraction']['id']), order_info.order['trip']['date'], order_info.order['trip']['time'], order_info.order['price'], resp['status'])
+			con = db.get_connection()
+			Cursor = con.cursor(dictionary=True)
+			Cursor.execute(sql, insert_order)
+			con.commit()
+
+			# 訂單新增成功 把預定訂單刪除
+			member_id = (payload['user_id'],)  
+			Cursor.execute('''DELETE FROM bookings WHERE memberId = %s;''', member_id)
+			con.commit()
+
+			# replace the number key value with uuid
+			response_json['data'] = {'number': order_num, 'payment': {'status': resp['status'], 'message': message}}
+
+			return response_json
+
+	except Exception as e:
+
+		raise CustomHTTPException(status_code=500, detail=str(e))
+
+	finally:
+
+		con.close()
+		Cursor.close()
+
+
+# 根據訂單編號 取得訂單資訊
+@app.get("/api/order/{orderNumber}")
+def get_order_info(orderNumber: str, payload: dict = Depends(login_required)):
+
+	response_json = {"data": None}
+
+	try: 
+
+		sql = '''SELECT o.id, o.price, o.date, o.time, o.status, m.name AS memberName, m.email, o.memberPhone, o.attractionId, a.name AS attractionName, a.address, a.images
+				 FROM orders AS o
+				 INNER JOIN members AS m
+				 ON o.memberId = m.id
+				 INNER JOIN attractions AS a
+				 ON o.attractionId = a.id
+				 WHERE o.id = %s;'''
+		orderNum = (orderNumber,)
+		con = db.get_connection()
+		Cursor = con.cursor(dictionary=True)
+		Cursor.execute(sql, orderNum)
+		order_info = Cursor.fetchall()
+
+		if len(order_info) == 0:
+
+			return response_json
+		
+		else:
+			response_json['data'] = {}
+			response_json['data']['number'] = order_info[0]['id']
+			response_json['data']['price'] = order_info[0]['price']
+			image = json.loads(order_info[0]['images'])[0]
+			response_json['data']['trip'] = {'attraction': {'id': order_info[0]['attractionId'], 
+									 		 				'name': order_info[0]['attractionName'], 
+									 		 				'address': order_info[0],
+									 		 				'image': image},
+									 		 'date': order_info[0]['date'],
+									 		 'time': order_info[0]['time']}
+			response_json['data']['contact'] = {'name': order_info[0]['memberName'],
+							   					'email': order_info[0]['email'],
+												'phone': order_info[0]['memberPhone']}
+			response_json['data']['status'] = order_info[0]['status']
+
+			return response_json
+
+	except Exception as e:
+
+		raise CustomHTTPException(status_code=500, detail=str(e))
+
+	finally:
+	
 		con.close()
 		Cursor.close()
 

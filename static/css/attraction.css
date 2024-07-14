@@ -5,13 +5,13 @@
     box-sizing: border-box;
 }
 
-body{
+body {
     margin: 0 auto;
     font-family: 'Noto Sans TC', sans-serif;
     max-width: 1920px;
 }
 
-.header{
+.header {
     position: fixed; 
     top: 0; 
     width: 100%;
@@ -19,7 +19,7 @@ body{
     background-color: white;
 } 
 
-.title{
+.title {
     cursor: pointer;
     margin-top: 5.25px;
     margin-bottom: 5.25px;
@@ -29,7 +29,7 @@ body{
     text-decoration: none;
 }
 
-.thousand_twoHundred_navbar{
+.thousand_twoHundred_navbar {
     max-width: 1200px; 
     display: flex; 
     justify-content: space-between;
@@ -37,13 +37,13 @@ body{
     align-items: center;
 }
 
-.items{
+.items {
     display: flex;
     justify-content: flex-end;
     flex: auto;
 }
 
-.item{
+.item {
     font-size: 16px;
     color: #666666;
     margin: 10px 10px 10px 10px;
@@ -68,6 +68,29 @@ body{
     z-index: 999;
 }
 
+#fade-sign-in {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s, opacity 1.5s linear;
+}
+
+#fade-sign-in.show {
+    visibility: visible;
+    opacity: 1;
+    -webkit-animation: fadeIn 1.5s;
+    animation: fadeIn 1.5s;
+}
+
+@-webkit-keyframes fadeIn {
+    from {opacity: 0.8}
+    to {opacity: 1}
+}
+
+@keyframes fadeIn {
+    from {opacity: 0.8}
+    to {opacity: 1}
+} 
+
 .pop-up-sign-in, .pop-up-enroll {
     text-align: center;
     width: 340px;
@@ -81,7 +104,7 @@ body{
     top: -31%;
 }
 
-.pop-up-enroll{
+.pop-up-enroll {
     height: 332px;
     top: -29%;
 }
@@ -124,8 +147,8 @@ body{
     padding-top: 15px;
     padding-bottom: 15px;
     outline: none; /* make the following focus work */
-    -webkit-transition: 0.5s;
-    transition: 0.5s;
+    /* -webkit-transition: 0.5s;
+    transition: 0.5s; */
 }
 
 #emailID, #nameID {
@@ -137,7 +160,7 @@ body{
 }
 
 #emailID:focus, #emailID-enroll:focus, #passwordID:focus, #passwordID-enroll:focus, #nameID:focus {
-    border: 1px solid #448899;
+    border: 2px solid #448899;
 }
 
 .logInBtn, .enrollBtn {
@@ -246,7 +269,7 @@ body{
 
 @-webkit-keyframes fade {
     from {opacity: 0.8}
-    tp {opacity: 1}
+    to {opacity: 1}
 }
 
 @keyframes fade {
