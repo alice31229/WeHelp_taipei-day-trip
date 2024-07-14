@@ -154,7 +154,9 @@ function showElements() {
 // loading before the data fetch back from db and backend
 window.addEventListener("load", () => {
     const loader = document.querySelector(".loader");
-    loader.classList.add("loader--hidden");
+    setTimeout(() => {
+        loader.classList.add('loader--hidden');
+    }, 1500);
 });
 
 // 從 1. index click 預定行程; 2. attraction click 開始預定行程

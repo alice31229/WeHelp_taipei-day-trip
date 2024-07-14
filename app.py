@@ -712,7 +712,7 @@ def get_order_info(orderNumber: str, payload: dict = Depends(login_required)):
 			image = json.loads(order_info[0]['images'])[0]
 			response_json['data']['trip'] = {'attraction': {'id': order_info[0]['attractionId'], 
 									 		 				'name': order_info[0]['attractionName'], 
-									 		 				'address': order_info[0],
+									 		 				'address': order_info[0]['address'],
 									 		 				'image': image},
 									 		 'date': order_info[0]['date'],
 									 		 'time': order_info[0]['time']}

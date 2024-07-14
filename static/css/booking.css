@@ -237,7 +237,6 @@ body {
     max-width: 1004px;
     margin-top: 40px;
     margin-bottom: 40px;
-    /* margin-left: 10px; */
     margin-left: auto;
     margin-right: auto;
 }
@@ -263,7 +262,7 @@ body {
     height: 100%;
 }
 
-.title_style_up{
+.title_style_up {
     font-weight: 700;
     font-size: 19px;
     color: #666666;
@@ -274,7 +273,7 @@ body {
     margin-right: auto;
 }
 
-.green_font{
+.green_font {
     font-style: normal;
     font-weight: 700;
     font-size: 16px;
@@ -283,7 +282,7 @@ body {
     max-width: 700px;
 }
 
-.marginBottom{
+.marginBottom {
     margin-bottom: 15px;
     height: 24px;
 }
@@ -296,19 +295,19 @@ body {
     margin-right: 5px;
 }
 
-.no_bold_style_up{
+.no_bold_style_up {
     font-style: normal;
     font-weight: 400;
     font-size: 16px;
     color: #666666;
 }
 
-.line{
+.line {
     opacity: 0.3;
     max-width: 980px;
 }
 
-.img_schedule{
+.img_schedule {
     max-width: 980px;
     height: 200px;
     margin-left: auto;
@@ -344,6 +343,11 @@ body {
     color: #666666;
 }
 
+.container {
+    display: flex;
+    align-items: center;
+}
+
 .no_bold_style, .no_bold_style_credit {
     font-style: normal;
     font-weight: 400;
@@ -368,14 +372,13 @@ body {
 .tpfield {
     display: inline-block;
     vertical-align: middle;
-    
 }
 
 .no_bold_style_credit, .tpfield {
-    margin-bottom: 29px;
+    margin-bottom: 10px;
 }
 
-.tpfield:focus, .input_border_style:focus {
+.input_border_style:focus {
     border: 2px solid #448899;
 }
 
