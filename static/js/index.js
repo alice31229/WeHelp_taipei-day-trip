@@ -165,10 +165,14 @@ document.addEventListener("DOMContentLoaded", function () {
     let signInEnroll = document.getElementById('signInEnroll');
     signInEnroll.addEventListener('click', function() {
         if (signInEnroll.textContent === '登入/註冊'){
+            const fadeElement = document.getElementById('fade');
+            fadeElement.classList.add('show');
             signIn.style.display = 'flex';
         }
     })
     closeSignIn.addEventListener('click', function(){
+        const fadeElement = document.getElementById('fade');
+        fadeElement.classList.remove('show');
         clearInputValue();
         adjustHeightAll();
         signIn.style.display = 'none';
@@ -176,6 +180,8 @@ document.addEventListener("DOMContentLoaded", function () {
     signIn.addEventListener('click', function(event) {
         if (event.target === signIn) {
 
+            const fadeElement = document.getElementById('fade');
+            fadeElement.classList.remove('show');
             // if error message shows -> hide
             let errorShow = document.querySelector('.error-message-sign-in');
             errorShow.style.display = 'none';
@@ -256,12 +262,16 @@ document.addEventListener("DOMContentLoaded", function () {
         adjustHeightAll();
     })
     closeEnroll.addEventListener('click', function() {
+        const fadeElement = document.getElementById('fade');
+        fadeElement.classList.remove('show');
         enroll.style.display = 'none';
         clearInputValue();
         adjustHeightAll();
     })
     enroll.addEventListener('click', function(event) {
         if (event.target === enroll) {
+            const fadeElement = document.getElementById('fade');
+            fadeElement.classList.remove('show');
             let enrollShow = document.querySelector('.message-enroll');
             enrollShow.style.display = 'none';
             enroll.style.display = 'none';
@@ -271,6 +281,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // sign in token await
     const loginForm = document.getElementById("signin"); // 要用form而不是button
     loginForm.addEventListener('submit', async function(event) {
+
         event.preventDefault();
 
 
@@ -317,6 +328,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 // close sign in dilalog
                 let closeSignIn = document.querySelector('.pop-background-color-sign-in');
+                const fadeElement = document.getElementById('fade');
+                fadeElement.classList.remove('show');
                 closeSignIn.style.display = 'none';
 
                 // 登入/註冊 -> 登出帳戶
@@ -601,6 +614,8 @@ document.addEventListener("DOMContentLoaded", function () {
     
             if (!result.data) { // not log in
     
+                const fadeElement = document.getElementById('fade');
+                fadeElement.classList.add('show');
                 let signIn = document.querySelector('.pop-background-color-sign-in');
                 signIn.style.display = 'flex';
 

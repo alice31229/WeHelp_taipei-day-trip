@@ -5,6 +5,48 @@
     box-sizing: border-box;
 }
 
+/* loading effect: https://codepen.io/dcode-software/pen/rNYGdeg */
+
+.loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #666666;
+    transition: opacity 0.75s, visibility 0.75s;
+    z-index: 60;
+  }
+  
+  .loader--hidden {
+    opacity: 0;
+    visibility: hidden;
+  }
+  
+  .loader::after {
+    content: "";
+    width: 75px;
+    height: 75px;
+    border: 15px solid #dddddd;
+    border-top-color: #448899;
+    border-radius: 50%;
+    animation: loading 0.75s ease infinite;
+  }
+  
+  @keyframes loading {
+    from {
+      transform: rotate(0turn);
+    }
+    to {
+      transform: rotate(1turn);
+    }
+  }
+
+/********************/
+
 body {
     margin: 0 auto;
     font-family: 'Noto Sans TC', sans-serif;
@@ -16,7 +58,7 @@ body {
     top: 0; 
     width: 100%;
     background-color: #F8F8F8;
-    z-index: 30;
+    z-index: 999;
 } 
 
 .title {
@@ -65,7 +107,7 @@ body {
     justify-content: center;
     align-items: center;
     text-align: center;
-    z-index: 999;
+    z-index: 30;
 }
 
 .pop-up-sign-in, .pop-up-enroll {
@@ -183,7 +225,7 @@ body {
     /* position: relative;  */
     margin-top: 35px;
     justify-content: space-between;
-    align-items: stretch; /* 确保子元素撑开父元素的高度 */
+    align-items: stretch; 
     height: 100%;
 }
 
@@ -195,14 +237,13 @@ body {
     max-width: 1004px;
     margin-top: 40px;
     margin-bottom: 40px;
-    margin-left: 10px;
     margin-left: auto;
     margin-right: auto;
 }
 
 .left{
     display: flex;
-    height: 100%; /* 确保左侧 div 撑开父元素的高度 */
+    height: 100%; 
 }
 
 .img{
@@ -221,7 +262,7 @@ body {
     height: 100%;
 }
 
-.title_style_up{
+.title_style_up {
     font-weight: 700;
     font-size: 19px;
     color: #666666;
@@ -232,7 +273,7 @@ body {
     margin-right: auto;
 }
 
-.green_font{
+.green_font {
     font-style: normal;
     font-weight: 700;
     font-size: 16px;
@@ -241,7 +282,7 @@ body {
     max-width: 700px;
 }
 
-.marginBottom{
+.marginBottom {
     margin-bottom: 15px;
     height: 24px;
 }
@@ -254,19 +295,23 @@ body {
     margin-right: 5px;
 }
 
-.no_bold_style_up{
+.no_bold_style_up {
     font-style: normal;
     font-weight: 400;
     font-size: 16px;
     color: #666666;
 }
 
-.line{
+.line {
     opacity: 0.3;
     max-width: 980px;
 }
 
-.img_schedule{
+.prompt, .cardprompt {
+    color: rgb(137, 28, 28);
+}
+
+.img_schedule {
     max-width: 980px;
     height: 200px;
     margin-left: auto;
@@ -302,16 +347,21 @@ body {
     color: #666666;
 }
 
-.no_bold_style{
+.container {
+    display: flex;
+    align-items: center;
+}
+
+.no_bold_style, .no_bold_style_credit {
     font-style: normal;
     font-weight: 400;
     font-size: 16px;
     line-height: 13px;
     color: #666666;
-    text-align: center; /* 新增这一行 */
+    text-align: center;
 }
 
-.input_border_style{
+.tpfield, .input_border_style{
     width: 200px;
     height: 38px;
     font-size: 16px;
@@ -321,6 +371,15 @@ body {
     box-sizing: border-box;
     border-radius: 5px;
     outline: none;
+}
+
+.tpfield {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.no_bold_style_credit, .tpfield {
+    margin-bottom: 10px;
 }
 
 .input_border_style:focus {
@@ -407,7 +466,7 @@ body {
 
 @media(max-width: 1000px) and (min-width: 601px){
 
-    .title_style_up, .img_schedule, .line, .title_style, .common_style_site, .common_style_site_middle, .form, .creditForm {
+    .title_style_up, .noBookingRecord, .img_schedule, .line, .title_style, .common_style_site, .common_style_site_middle, .form, .creditForm {
         margin-left: 10px;
         margin-right: 10px;
     }
@@ -442,7 +501,7 @@ body {
         height: auto;
     }
 
-    .title_style_up , .title_style, .form, .line, .common_style_site_middle, .creditForm, .check_book {
+    .title_style_up , .noBookingRecord, .title_style, .form, .line, .common_style_site_middle, .creditForm, .check_book {
         max-width: 95%;
         margin-left: 10px;
         margin-right: 10px;
