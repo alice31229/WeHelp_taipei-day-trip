@@ -14,7 +14,7 @@ async function LoadBookingRecord() {
         let result = await getResponse.json();
 
         // member name
-        let memberInfo = await fetch('/api/user/auth', {
+        let memberInfo = await fetch('/taipei-trip/api/user/auth', {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -25,7 +25,7 @@ async function LoadBookingRecord() {
 
         if (result.status === 403) { // not log in
 
-            window.location.href = '/';
+            window.location.href = '/taipei-trip';
 
         } 
         
@@ -109,7 +109,7 @@ async function checkLogIn() {
     const token = localStorage.getItem("authToken");
 
     try {
-        const getLogInResponse = await fetch('/api/user/auth', {
+        const getLogInResponse = await fetch('/taipei-trip/api/user/auth', {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -172,14 +172,14 @@ document.addEventListener("DOMContentLoaded", async function () {
     } else {
         // Token is invalid or expired
         localStorage.removeItem("authToken");
-        window.location.assign('/');
+        window.location.assign('/taipei-trip');
     };
     
 
     // back to homePage
     let title = document.querySelector('.title');
     title.addEventListener('click', () => {
-        window.location.href = '/';
+        window.location.href = '/taipei-trip';
     })
 
     // log out -> remove token -> back to homePage
@@ -187,7 +187,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     logOut.addEventListener('click', () => {
 
         localStorage.removeItem("authToken");
-        window.location.href = '/';
+        window.location.href = '/taipei-trip';
 
     })
 
@@ -201,7 +201,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         // check log in or not
         try {
             const token = localStorage.getItem("authToken");
-            const getResponse = await fetch('/api/user/auth', {
+            const getResponse = await fetch('/taipei-trip/api/user/auth', {
                 method: 'GET',
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -455,7 +455,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     } else if (result["data"]["payment"]["status"] != 0) {
                         cardprompt.textContent = result["data"]["payment"]["message"] + "，請再試一次";
                     } else {
-                        window.location.href = `/thankyou?number=${result["data"]["number"]}`;
+                        window.location.href = `/taipei-trip/thankyou?number=${result["data"]["number"]}`;
                     }
 
 
@@ -472,7 +472,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         } else{
 
             localStorage.removeItem("authToken");
-            window.location.assign('/');
+            window.location.assign('/taipei-trip');
 
         }
 

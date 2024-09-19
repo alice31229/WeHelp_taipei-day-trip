@@ -18,8 +18,8 @@ Tesing account:
 
 # Technical Flow
 
-![alt text](technical_flow.png)
+![alt text](readme/technical_flow.png)
 
 # Table Schema ERD
 
-![alt text](taipei_trip_ERD.png)
+![alt text](readme/taipei_trip_ERD.png)

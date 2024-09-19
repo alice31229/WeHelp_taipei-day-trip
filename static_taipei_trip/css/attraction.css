@@ -338,7 +338,7 @@ body {
 
 input[type="date"]::-webkit-calendar-picker-indicator {
     display: block;
-    background: url(/static/photo_icon/icon_calendar.png) no-repeat;
+    background: url(/static_taipei_trip/photo_icon/icon_calendar.png) no-repeat;
     width: 24px;
     height: 24px;
     padding-right: 8px;

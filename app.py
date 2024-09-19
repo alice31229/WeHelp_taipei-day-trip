@@ -3,29 +3,29 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 app=FastAPI()
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static_taipei_trip", StaticFiles(directory="static_taipei_trip"), name="static_taipei_trip")
 
 # Static Pages
 
 # home page
-@app.get("/", include_in_schema=False)
+@app.get("/taipei-trip", include_in_schema=False)
 async def index(request: Request):
-	return FileResponse("./static/index.html", media_type="text/html")
+	return FileResponse("./static_taipei_trip/index.html", media_type="text/html")
 
 # attraction detail page
-@app.get("/attraction/{id}", include_in_schema=False)
+@app.get("/taipei-trip/attraction/{id}", include_in_schema=False)
 async def attraction(request: Request, id: int):
-	return FileResponse("./static/attraction.html", media_type="text/html")
+	return FileResponse("./static_taipei_trip/attraction.html", media_type="text/html")
 
 # booking interested attraction schedule
-@app.get("/booking", include_in_schema=False)
+@app.get("/taipei-trip/booking", include_in_schema=False)
 async def booking(request: Request):
-	return FileResponse("./static/booking.html", media_type="text/html")
+	return FileResponse("./static_taipei_trip/booking.html", media_type="text/html")
 
 # thank you page after payment step
-@app.get("/thankyou", include_in_schema=False)
+@app.get("/taipei-trip/thankyou", include_in_schema=False)
 async def thankyou(request: Request):
-	return FileResponse("./static/thankyou.html", media_type="text/html")
+	return FileResponse("./static_taipei_trip/thankyou.html", media_type="text/html")
 
 
 ##################################
@@ -35,7 +35,7 @@ import re
 import jwt
 import json
 import bcrypt
-import uvicorn
+#import uvicorn
 import requests
 import mysql.connector
 from pydantic import BaseModel
@@ -43,28 +43,10 @@ from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
+from tools import db_config, get_12_attractions_by_keyword, get_12_attractions_by_page
 
-# MySQL settings
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 load_dotenv(dotenv_path)
-
-# local mysql settings
-db = mysql.connector.pooling.MySQLConnectionPool(
-        pool_name="sql_pool",
-        host=os.getenv('MYSQL_HOST'), 
-        user=os.getenv('MYSQL_USER'), 
-        password=os.getenv('MYSQL_PASSWORD'),
-        database=os.getenv("MYSQL_DB")
-    )
-
-# aws rds mysql settings
-db = mysql.connector.pooling.MySQLConnectionPool(
-        pool_name = "sql_pool",
-        host=os.getenv("AWS_RDS_HOSTNAME"),
-        user=os.getenv("AWS_RDS_USER"),
-        password=os.getenv("AWS_RDS_PASSWORD"),
-        database=os.getenv("AWS_RDS_DB")
-     )
 
 
 # user enroll or member log in/out JWT settings
@@ -150,111 +132,11 @@ class order_info(BaseModel):
 	order: dict
 
 
-# homepage keyword search data 
-def get_12_attractions_by_keyword(kw, page=0):
 
-	# sql = 'SELECT * FROM attractions WHERE MATCH(name) AGAINST (%s) OR MATCH(description) AGAINST (%s)'
-	# sql = "SELECT * FROM attractions WHERE name like %s OR description like %s;"
-
-	# 用來完全比對捷運站名稱、或模糊比對景點名稱的關鍵字，沒有給定則不做篩選
-	sql = '''SELECT * FROM (SELECT * FROM attractions WHERE name like %s OR mrt = %s) AS subquery LIMIT %s, %s;'''
-
-	page_size = 24 # judge the nextPage
-	start = page * 12
-
-	# Escaping wildcards in the parameter
-	search_param = f"%{kw}%"
-	keyword = (search_param, kw, start, page_size)
-
-	try:
-		
-		con = db.get_connection()
-		Cursor = con.cursor(dictionary=True)
-		Cursor.execute(sql, keyword)
-		query_result_raw = Cursor.fetchall()
-		next_page_judge = len(query_result_raw)
-
-		query_result = []
-		for image_datatype in query_result_raw:
-			image_datatype['images'] = json.loads(image_datatype['images'])
-			query_result.append(image_datatype)
-
-		if next_page_judge < 13 and next_page_judge > 0:
-
-			return {'nextPage': None,
-					'data': query_result[:next_page_judge]}
-		
-		elif next_page_judge > 12:
-
-			return {'nextPage': page+1,
-					'data': query_result[:12]}
-
-		else:
-
-			return {'error': True,
-					'message': '景點資料超出頁數'}
-
-	except mysql.connector.Error as err:
-
-		print(f"Error: {err}")
-		return {'error': True,
-				'message': '景點資料輸出錯誤'}
-
-	finally:
-
-		con.close()
-		Cursor.close()
-
-
-# homepage infinite scroll data
-def get_12_attractions_by_page(page):
-
-	try:
-
-		con = db.get_connection()
-		Cursor = con.cursor(dictionary=True)
-		page_size = 24 # judge the nextPage
-		start = page * 12
-
-		sql_12 = '''SELECT * FROM attractions LIMIT %s, %s;'''
-		Cursor.execute(sql_12, (start, page_size))
-		demand_attractions_raw = Cursor.fetchall()
-
-		demand_attractions = []
-		for img_datatype in demand_attractions_raw:
-			img_datatype['images'] = json.loads(img_datatype['images'])
-			demand_attractions.append(img_datatype)
-
-		if len(demand_attractions) > 12:
-		
-			return {'nextPage': page+1,
-					'data': demand_attractions[:12]}
-		
-		elif len(demand_attractions) < 13 and len(demand_attractions) > 0:
-
-			return {'nextPage': None,
-					'data': demand_attractions}
-
-		else:
-
-			return {'error': True,
-				    'message': '請輸入涵蓋景點資料的正確頁數'}
-			
-
-	except mysql.connector.Error as err:
-
-		print(f"Error: {err}")
-		return {'error': True,
-				'message': '景點資料輸出錯誤'}
-
-	finally:
-
-		con.close()
-		Cursor.close()
 
 
 # 登入帳號
-@app.put("/api/user/auth")
+@app.put("/taipei-trip/api/user/auth")
 async def sign_in(member_info: member_info):
 #async def sign_in(email: str = Form(...), password: str = Form(...)):
 
@@ -265,6 +147,7 @@ async def sign_in(member_info: member_info):
 		query = '''SELECT id, name, email, password FROM members WHERE email = %s;'''
 		account = (member_info.email,)
 	
+		db = db_config()
 		con = db.get_connection()
 		Cursor = con.cursor(dictionary=True)
 		Cursor.execute(query, account)
@@ -308,7 +191,7 @@ async def sign_in(member_info: member_info):
 
 
 # 登入會員資訊
-@app.get("/api/user/auth")
+@app.get("/taipei-trip/api/user/auth")
 async def get_user_info(token: str = Depends(oauth2_scheme)):
 
 	response_json = {"data": ''}
@@ -331,7 +214,7 @@ async def get_user_info(token: str = Depends(oauth2_scheme)):
 # 使用 JWT 機制 不需要設置登出路由 從前端刪除token即可
 
 # 註冊帳號
-@app.post("/api/user")
+@app.post("/taipei-trip/api/user")
 async def enroll_account(user_info: user_info):
 
 	response_json = {}
@@ -339,6 +222,7 @@ async def enroll_account(user_info: user_info):
 	# 確認是否已註冊
 	try:
 
+		db = db_config()
 		con = db.get_connection()
 		Cursor = con.cursor(dictionary=True)
 
@@ -414,6 +298,7 @@ async def get_target_attraction_info(id: int):
 
 	try:
 
+		db = db_config()
 		con = db.get_connection()
 		Cursor = con.cursor(dictionary=True)
 
@@ -463,6 +348,7 @@ async def get_mrt_info():
 				 WHERE mrt IS NOT NULL
 				 GROUP BY mrt
 				 ORDER BY 2 DESC;'''
+		db = db_config()
 		con = db.get_connection()
 		Cursor = con.cursor(dictionary=True)
 		Cursor.execute(sql)
@@ -500,6 +386,7 @@ async def get_booking_info(payload: dict = Depends(login_required)):
 				 ON a.id = b.attractionId
 				 WHERE b.memberId = %s;'''
 		
+		db = db_config()
 		con = db.get_connection()
 		Cursor = con.cursor(dictionary=True)
 		member_id = (payload["user_id"],)
@@ -549,6 +436,7 @@ async def add_new_schedule(schedule_info: schedule_info, payload: dict = Depends
 			raise CustomHTTPException(status_code=400, detail='請提供完整預定行程資訊')
 
 		# check the member having booking record or not
+		db = db_config()
 		con = db.get_connection()
 		Cursor = con.cursor(dictionary=True)
 
@@ -598,6 +486,7 @@ async def remove_schedule(payload: dict = Depends(login_required)):
 
 		# 因為在設定裡一個會員只會有一筆未付款的預定行程
 		query = '''DELETE FROM bookings WHERE memberId = %s;'''
+		db = db_config()
 		con = db.get_connection()
 		Cursor = con.cursor(dictionary=True)
 		member_id = (payload['user_id'],)  
@@ -642,8 +531,8 @@ def order_attraction(order_info: order_info, payload: dict = Depends(login_requi
 			order_num = datetime.utcnow().strftime('%Y%m%d%H%M%S%f')
 			req_TapPay = {
 				"prime": order_info.prime,
-				"partner_key": os.environ.get("TAPPAY_KEY"),
-				"merchant_id": "alice31229_ESUN",
+				"partner_key": os.getenv('TAPPAY_KEY'),
+				"merchant_id": os.getenv('MERCHANT_ID'),
 				"details": "TapPay info",
 				"amount": order_info.order['price'],
 				"order_number": order_num,
@@ -656,7 +545,7 @@ def order_attraction(order_info: order_info, payload: dict = Depends(login_requi
 			}
 
 			headers = {'content-type': 'application/json',
-			  		   'x-api-key': os.environ.get("TAPPAY_KEY")}
+			  		   'x-api-key': os.getenv('TAPPAY_KEY')}
 			response = requests.post('https://sandbox.tappaysdk.com/tpc/payment/pay-by-prime',
 									 data=json.dumps(req_TapPay), headers=headers)
 			resp = response.json()
@@ -670,6 +559,7 @@ def order_attraction(order_info: order_info, payload: dict = Depends(login_requi
 			sql = '''INSERT INTO orders (id, memberId, memberPhone, attractionId, date, time, price, status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);'''
 			# status from tappay
 			insert_order = (order_num, payload['user_id'], order_info.order['contact']['phone'], int(order_info.order['trip']['attraction']['id']), order_info.order['trip']['date'], order_info.order['trip']['time'], order_info.order['price'], resp['status'])
+			db = db_config()
 			con = db.get_connection()
 			Cursor = con.cursor(dictionary=True)
 			Cursor.execute(sql, insert_order)
@@ -711,6 +601,7 @@ def get_order_info(orderNumber: str, payload: dict = Depends(login_required)):
 				 ON o.attractionId = a.id
 				 WHERE o.id = %s;'''
 		orderNum = (orderNumber,)
+		db = db_config()
 		con = db.get_connection()
 		Cursor = con.cursor(dictionary=True)
 		Cursor.execute(sql, orderNum)
@@ -748,6 +639,6 @@ def get_order_info(orderNumber: str, payload: dict = Depends(login_required)):
 		Cursor.close()
 
 
-if __name__ == '__main__':
-    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
-	#uvicorn.run("app:app", port=8000, reload=True)
+# if __name__ == '__main__':
+#     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+#	  uvicorn.run("app:app", port=8000, reload=True)

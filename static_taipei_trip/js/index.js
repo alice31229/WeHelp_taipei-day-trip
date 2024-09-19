@@ -197,7 +197,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const token = localStorage.getItem("authToken");
         
         try {
-            const response = await fetch('/api/user/auth', {
+            const response = await fetch('/taipei-trip/api/user/auth', {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -290,7 +290,7 @@ document.addEventListener("DOMContentLoaded", function () {
         let password = document.querySelector('#passwordID');
 
         try {
-            const response = await fetch('/api/user/auth', {
+            const response = await fetch('/taipei-trip/api/user/auth', {
                 method: "PUT",
                 body: JSON.stringify({
                     email: email.value,
@@ -367,7 +367,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         try {
 
-            const response = await fetch('/api/user', {
+            const response = await fetch('/taipei-trip/api/user', {
                 method: "POST",
                 body: JSON.stringify({
                     name: name.value,
@@ -508,7 +508,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Ensure attrID is valid before navigating
             if (attrID) {
-                window.location.assign(`attraction/${attrID}`);
+                window.location.assign(`/taipei-trip/attraction/${attrID}`);
             }
             return;
         }
@@ -562,10 +562,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Arrow hover effect
-    const leftDefaultSrc = '/static/photo_icon/mrt_left_Default.png';
-    const leftHoverSrc = '/static/photo_icon/mrt_left_Hovered.png';
-    const rightDefaultSrc = '/static/photo_icon/mrt_right_Default.png';
-    const rightHoverSrc = '/static/photo_icon/mrt_right_Hovered.png';
+    const leftDefaultSrc = '/static_taipei_trip/photo_icon/mrt_left_Default.png';
+    const leftHoverSrc = '/static_taipei_trip/photo_icon/mrt_left_Hovered.png';
+    const rightDefaultSrc = '/static_taipei_trip/photo_icon/mrt_right_Default.png';
+    const rightHoverSrc = '/static_taipei_trip/photo_icon/mrt_right_Hovered.png';
 
     leftArrow.addEventListener('mouseover', () => {
         leftArrow.src = leftHoverSrc;
@@ -591,7 +591,7 @@ document.addEventListener("DOMContentLoaded", function () {
         let footer = document.querySelector('.copyRight');
         footer.style.display = 'none';
         footer.style.position = '';
-        window.location.href = '/';
+        window.location.href = '/taipei-trip';
     });
 
     // 看購物車 預定行程
@@ -603,7 +603,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // 登入驗證
         try {
             const token = localStorage.getItem("authToken");
-            const getResponse = await fetch('/api/user/auth', {
+            const getResponse = await fetch('/taipei-trip/api/user/auth', {
                 method: 'GET',
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -622,7 +622,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             } else { // log in
 
-                window.location.assign('/booking');
+                window.location.assign('/taipei-trip/booking');
 
             }
 
