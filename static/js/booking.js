@@ -302,7 +302,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         // Note that these apply to the iframe, not the root window.
         "@media screen and (max-width: 400px)": {
             input: {
-            color: "orange",
+                color: "orange",
             },
         },
         },

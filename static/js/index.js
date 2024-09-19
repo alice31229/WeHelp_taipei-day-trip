@@ -232,6 +232,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function showSignInButton() {
+        let signInEnroll = document.querySelector('#signInEnroll');
         signInEnroll.textContent = "登入/註冊";
     }
 
@@ -326,7 +327,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 // save token in localStorage
                 localStorage.setItem("authToken", token);
 
-                // close sign in dilalog
+                // close sign in dialog
                 let closeSignIn = document.querySelector('.pop-background-color-sign-in');
                 const fadeElement = document.getElementById('fade');
                 fadeElement.classList.remove('show');

@@ -5,24 +5,27 @@ app=FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Static Pages (Never Modify Code in this Block)
+# Static Pages
+
+# home page
 @app.get("/", include_in_schema=False)
 async def index(request: Request):
 	return FileResponse("./static/index.html", media_type="text/html")
+
+# attraction detail page
 @app.get("/attraction/{id}", include_in_schema=False)
 async def attraction(request: Request, id: int):
 	return FileResponse("./static/attraction.html", media_type="text/html")
+
+# booking interested attraction schedule
 @app.get("/booking", include_in_schema=False)
 async def booking(request: Request):
 	return FileResponse("./static/booking.html", media_type="text/html")
+
+# thank you page after payment step
 @app.get("/thankyou", include_in_schema=False)
 async def thankyou(request: Request):
 	return FileResponse("./static/thankyou.html", media_type="text/html")
-
-
-
-
-
 
 
 ##################################
@@ -39,17 +42,29 @@ from pydantic import BaseModel
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
 from datetime import datetime, timedelta, timezone
-
+from dotenv import load_dotenv
 
 # MySQL settings
-mysql_secret_code = os.environ.get('ENV_MYSQL_PASSWORD')
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+load_dotenv(dotenv_path)
 
+# local mysql settings
 db = mysql.connector.pooling.MySQLConnectionPool(
-    pool_name="sql_pool",
-    host="localhost", # in same ec2 use localhost; otherwise, use the endpoint
-    user="root", 
-    password=mysql_secret_code,
-	database="TaipeiTrip")
+        pool_name="sql_pool",
+        host=os.getenv('MYSQL_HOST'), 
+        user=os.getenv('MYSQL_USER'), 
+        password=os.getenv('MYSQL_PASSWORD'),
+        database=os.getenv("MYSQL_DB")
+    )
+
+# aws rds mysql settings
+db = mysql.connector.pooling.MySQLConnectionPool(
+        pool_name = "sql_pool",
+        host=os.getenv("AWS_RDS_HOSTNAME"),
+        user=os.getenv("AWS_RDS_USER"),
+        password=os.getenv("AWS_RDS_PASSWORD"),
+        database=os.getenv("AWS_RDS_DB")
+     )
 
 
 # user enroll or member log in/out JWT settings
@@ -201,7 +216,7 @@ def get_12_attractions_by_page(page):
 		page_size = 24 # judge the nextPage
 		start = page * 12
 
-		sql_12 = '''SELECT * FROM attractions limit %s, %s;'''
+		sql_12 = '''SELECT * FROM attractions LIMIT %s, %s;'''
 		Cursor.execute(sql_12, (start, page_size))
 		demand_attractions_raw = Cursor.fetchall()
 
