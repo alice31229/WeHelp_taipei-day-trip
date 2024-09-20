@@ -3,7 +3,7 @@ async function LoadBookingRecord() {
 
     try {
         const token = localStorage.getItem("authToken");
-        const getResponse = await fetch('/api/booking', {
+        const getResponse = await fetch('/taipei-trip/api/booking', {
             method: 'GET',
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -216,10 +216,15 @@ document.addEventListener("DOMContentLoaded", async function () {
                 let signIn = document.querySelector('.pop-background-color-sign-in');
                 signIn.style.display = 'flex';
 
+                // add default email and password
+                let defaultEmail = document.querySelector('#emailID');
+                defaultEmail.value = 'test@gmail.com';
+                let defaultPassword = document.querySelector('#passwordID');
+                defaultPassword.value = 'testTEST8~';
     
             } else {
 
-                const deleteResponse = await fetch('/api/booking', {
+                const deleteResponse = await fetch('/taipei-trip/api/booking', {
                     method: 'DELETE',
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -254,57 +259,57 @@ document.addEventListener("DOMContentLoaded", async function () {
     
     let fields = {
         number: {
-        element: "#card-number",
-        placeholder: "**** **** **** ****",
+            element: "#card-number",
+            placeholder: "**** **** **** ****",
         },
         expirationDate: {
-        element: document.getElementById("card-expiration-date"),
-        placeholder: "MM / YY",
+            element: document.getElementById("card-expiration-date"),
+            placeholder: "MM / YY",
         },
         ccv: {
-        element: "#card-ccv",
-        placeholder: "CVV",
+            element: "#card-ccv",
+            placeholder: "CVV",
         },
     };
     
     TPDirect.card.setup({
         fields: fields,
         styles: {
-        // Style all elements
-        input: {
-            color: "gray",
-        },
-        // Styling ccv field
-        "input.ccv": {
-            "font-size": "16px",
-        },
-        // Styling expiration-date field
-        "input.expiration-date": {
-            "font-size": "16px",
-        },
-        // Styling card-number field
-        "input.card-number": {
-            "font-size": "16px",
-        },
-        // style focus state
-        ":focus": {
-            color: "black",
-        },
-        // style valid state
-        ".valid": {
-            color: "green",
-        },
-        // style invalid state
-        ".invalid": {
-            color: "red",
-        },
-        // Media queries
-        // Note that these apply to the iframe, not the root window.
-        "@media screen and (max-width: 400px)": {
+            // Style all elements
             input: {
-                color: "orange",
+                color: "gray",
             },
-        },
+            // Styling ccv field
+            "input.ccv": {
+                "font-size": "16px",
+            },
+            // Styling expiration-date field
+            "input.expiration-date": {
+                "font-size": "16px",
+            },
+            // Styling card-number field
+            "input.card-number": {
+                "font-size": "16px",
+            },
+            // style focus state
+            ":focus": {
+                color: "black",
+            },
+            // style valid state
+            ".valid": {
+                color: "green",
+            },
+            // style invalid state
+            ".invalid": {
+                color: "red",
+            },
+            // Media queries
+            // Note that these apply to the iframe, not the root window.
+            "@media screen and (max-width: 400px)": {
+                input: {
+                    color: "orange",
+                },
+            },
         },
     });
     let cardprompt = document.querySelector(".cardprompt");
@@ -439,7 +444,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                     let token = localStorage.getItem("authToken");
 
-                    const postResponse = await fetch('/api/orders', {
+                    const postResponse = await fetch('/taipei-trip/api/orders', {
                         method: "POST",
                         body: JSON.stringify(requestBookingData),
                         headers: {

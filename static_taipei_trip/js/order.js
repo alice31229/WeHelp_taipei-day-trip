@@ -7,7 +7,7 @@ async function GetOrder() {
             //number = parseInt(number);
             console.log(number);
             let token = localStorage.getItem("authToken");
-            const getResponse = await fetch(`/api/order/${number}`, {
+            const getResponse = await fetch(`/taipei-trip/api/order/${number}`, {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`,

@@ -3,7 +3,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 app=FastAPI()
 
-app.mount("/static_taipei_trip", StaticFiles(directory="static_taipei_trip"), name="static_taipei_trip")
+app.mount("/taipei-trip/static_taipei_trip", StaticFiles(directory="/app/static_taipei_trip"), name="static_taipei_trip")
 
 # Static Pages
 
@@ -272,7 +272,7 @@ async def enroll_account(user_info: user_info):
 
 
 # homepage attractions data router
-@app.get("/api/attractions")
+@app.get("/taipei-trip/api/attractions")
 async def handle_attraction_page(page: int = Query(0), keyword: str = Query('')):
 
 	#print(page, keyword)
@@ -293,7 +293,7 @@ async def handle_attraction_page(page: int = Query(0), keyword: str = Query(''))
 
 
 # each attraction info api router
-@app.get("/api/attraction/{id}")
+@app.get("/taipei-trip/api/attraction/{id}")
 async def get_target_attraction_info(id: int):
 
 	try:
@@ -337,7 +337,7 @@ async def get_target_attraction_info(id: int):
 
 
 # homepage mrt click keyword search api router
-@app.get("/api/mrts")
+@app.get("/taipei-trip/api/mrts")
 async def get_mrt_info():
 
 	mrts = []
@@ -373,7 +373,7 @@ async def get_mrt_info():
 
 
 # 行程預定 路由
-@app.get("/api/booking") # 尚未下單的預定行程
+@app.get("/taipei-trip/api/booking") # 尚未下單的預定行程
 async def get_booking_info(payload: dict = Depends(login_required)):
 	
 	response_json = {"data": None}
@@ -424,7 +424,7 @@ async def get_booking_info(payload: dict = Depends(login_required)):
 
 
 # 建立新的預定行程
-@app.post("/api/booking")
+@app.post("/taipei-trip/api/booking")
 async def add_new_schedule(schedule_info: schedule_info, payload: dict = Depends(login_required)):
 
 	response_json = {}
@@ -477,7 +477,7 @@ async def add_new_schedule(schedule_info: schedule_info, payload: dict = Depends
 
 
 # 刪除預定行程
-@app.delete("/api/booking")
+@app.delete("/taipei-trip/api/booking")
 async def remove_schedule(payload: dict = Depends(login_required)):
 
 	response_json = {"ok": True}
@@ -506,7 +506,7 @@ async def remove_schedule(payload: dict = Depends(login_required)):
 
 
 # 建立新的訂單 並完成付款程序
-@app.post("/api/orders")
+@app.post("/taipei-trip/api/orders")
 def order_attraction(order_info: order_info, payload: dict = Depends(login_required)):
 
 	response_json = {}
@@ -586,7 +586,7 @@ def order_attraction(order_info: order_info, payload: dict = Depends(login_requi
 
 
 # 根據訂單編號 取得訂單資訊
-@app.get("/api/order/{orderNumber}")
+@app.get("/taipei-trip/api/order/{orderNumber}")
 def get_order_info(orderNumber: str, payload: dict = Depends(login_required)):
 
 	response_json = {"data": None}

@@ -63,7 +63,7 @@ async function addAttraction(page = 0) {
     loading.style.display = 'block';
 
     try {
-        const postResponse = await fetch(`/api/attractions?page=${page}`);
+        const postResponse = await fetch(`/taipei-trip/api/attractions?page=${page}`);
         const postData = await postResponse.text();
         const attraction_result = JSON.parse(postData);
         let infos = attraction_result.data;
@@ -99,7 +99,7 @@ async function addKwdAttraction(page = 0, keyword) {
     loading.style.display = 'block';
 
     try {
-        const postResponse = await fetch(`/api/attractions?page=${page}&keyword=${keyword}`);
+        const postResponse = await fetch(`/taipei-trip/api/attractions?page=${page}&keyword=${keyword}`);
         const postData = await postResponse.text();
         const attraction_result = JSON.parse(postData);
         let infos = attraction_result.data;
@@ -134,7 +134,7 @@ function check() {
 
 async function addMRT() {
     try {
-        const postResponse = await fetch('/api/mrts');
+        const postResponse = await fetch('/taipei-trip/api/mrts');
         const postData = await postResponse.text();
         const mrt_result = JSON.parse(postData);
         let infos = mrt_result.data;
@@ -168,6 +168,12 @@ document.addEventListener("DOMContentLoaded", function () {
             const fadeElement = document.getElementById('fade');
             fadeElement.classList.add('show');
             signIn.style.display = 'flex';
+            
+            // add default email and password
+            let defaultEmail = document.querySelector('#emailID');
+            defaultEmail.value = 'test@gmail.com';
+            let defaultPassword = document.querySelector('#passwordID');
+            defaultPassword.value = 'testTEST8~';
         }
     })
     closeSignIn.addEventListener('click', function(){
@@ -261,6 +267,13 @@ document.addEventListener("DOMContentLoaded", function () {
         signIn.style.display = 'flex';
         clearInputValue();
         adjustHeightAll();
+
+        // add default email and password
+        let defaultEmail = document.querySelector('#emailID');
+        defaultEmail.value = 'test@gmail.com';
+        let defaultPassword = document.querySelector('#passwordID');
+        defaultPassword.value = 'testTEST8~';
+
     })
     closeEnroll.addEventListener('click', function() {
         const fadeElement = document.getElementById('fade');
@@ -562,10 +575,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Arrow hover effect
-    const leftDefaultSrc = '/static_taipei_trip/photo_icon/mrt_left_Default.png';
-    const leftHoverSrc = '/static_taipei_trip/photo_icon/mrt_left_Hovered.png';
-    const rightDefaultSrc = '/static_taipei_trip/photo_icon/mrt_right_Default.png';
-    const rightHoverSrc = '/static_taipei_trip/photo_icon/mrt_right_Hovered.png';
+    const leftDefaultSrc = '/taipei-trip/static_taipei_trip/photo_icon/mrt_left_Default.png';
+    const leftHoverSrc = '/taipei-trip/static_taipei_trip/photo_icon/mrt_left_Hovered.png';
+    const rightDefaultSrc = '/taipei-trip/static_taipei_trip/photo_icon/mrt_right_Default.png';
+    const rightHoverSrc = '/taipei-trip/static_taipei_trip/photo_icon/mrt_right_Hovered.png';
 
     leftArrow.addEventListener('mouseover', () => {
         leftArrow.src = leftHoverSrc;
@@ -619,6 +632,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 fadeElement.classList.add('show');
                 let signIn = document.querySelector('.pop-background-color-sign-in');
                 signIn.style.display = 'flex';
+
+                // add default email and password
+                let defaultEmail = document.querySelector('#emailID');
+                defaultEmail.value = 'test@gmail.com';
+                let defaultPassword = document.querySelector('#passwordID');
+                defaultPassword.value = 'testTEST8~';
 
             } else { // log in
 

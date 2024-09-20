@@ -9,3 +9,4 @@ cryptography>=3.2
 bcrypt>=3.2.0
 pytz==2023.3.post1
 uvicorn==0.30.6
+requests==2.31.0

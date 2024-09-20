@@ -10,26 +10,26 @@ def db_config():
 	
     # MySQL settings
     # local 
-    db = mysql.connector.pooling.MySQLConnectionPool(
-            pool_name="sql_pool",
-            host=os.getenv('MYSQL_HOST'), 
-            user=os.getenv('MYSQL_USER'), 
-            password=os.getenv('MYSQL_PASSWORD'),
-            database=os.getenv("MYSQL_DB")
-        )
-	
-    return db
-
-    # aws rds 
     # db = mysql.connector.pooling.MySQLConnectionPool(
-    #         pool_name = "sql_pool",
-    #         host=os.getenv("AWS_RDS_HOSTNAME"),
-    #         user=os.getenv("AWS_RDS_USER"),
-    #         password=os.getenv("AWS_RDS_PASSWORD"),
-    #         database=os.getenv("AWS_RDS_DB")
-    #      )
+    #         pool_name="sql_pool",
+    #         host=os.getenv('MYSQL_HOST'), 
+    #         user=os.getenv('MYSQL_USER'), 
+    #         password=os.getenv('MYSQL_PASSWORD'),
+    #         database=os.getenv("MYSQL_DB")
+    #     )
 	
     # return db
+
+    # aws rds 
+    db = mysql.connector.pooling.MySQLConnectionPool(
+            pool_name = "sql_pool",
+            host=os.getenv("AWS_RDS_HOSTNAME"),
+            user=os.getenv("AWS_RDS_USER"),
+            password=os.getenv("AWS_RDS_PASSWORD"),
+            database=os.getenv("AWS_RDS_DB")
+         )
+	
+    return db
 
 # homepage keyword search data 
 def get_12_attractions_by_keyword(kw, page=0):
