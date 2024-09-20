@@ -17,7 +17,7 @@ function ProcessImgs(imgs) {
         // image slide
         // make selection btn and arrows according to the imgs amounts
         let dot = document.createElement('img');
-        dot.setAttribute('src', '/static/photo_icon/circle.png');
+        dot.setAttribute('src', '/taipei-trip/static_taipei_trip/photo_icon/circle.png');
         dot.setAttribute('class', 'dot');
         dot.setAttribute('id', ind);
         dot_box.appendChild(dot);
@@ -25,7 +25,7 @@ function ProcessImgs(imgs) {
         // Set the first image and dot as active
         if (ind === 0) {
             newImg.classList.add('active');
-            dot.setAttribute('src', '/static/photo_icon/circle current.png');
+            dot.setAttribute('src', '/taipei-trip/static_taipei_trip/photo_icon/circle current.png');
         }
 
     });
@@ -36,16 +36,30 @@ function ProcessImgs(imgs) {
 // use re to extract the attraction id
 function extractNumberFromPath(pathname) {
     
-    const match = pathname.match(/\/(\d+)$/);
+    //const match = pathname.match(/\/(\d+)$/);
+    const match = pathname.match(/\/(\d+)(?=\/|$)/);
     
     return match ? match[1] : null;
+}
+
+function extractAttractionPath(pathname) {
+    const parts = pathname.split('/'); 
+    const index = parts.indexOf('attraction');
+    
+    if (index !== -1 && index + 1 < parts.length) {
+        return `/${parts[index]}/${parts[index + 1]}`;
+    }
+    return null;
 }
 
 
 async function LoadAttraction() {
 
     try {
-        const postResponse = await fetch(`/api${window.location.pathname}`);
+        let attractionUrlID = extractAttractionPath(window.location.pathname);
+
+        //const postResponse = await fetch(`/api${window.location.pathname}`);
+        const postResponse = await fetch(`/taipei-trip/api${attractionUrlID}`);
         const postData = await postResponse.text();
         const attraction_result = JSON.parse(postData);
         let info = attraction_result.data;
@@ -72,7 +86,7 @@ async function LoadAttraction() {
             ProcessImgs(info.images);
 
         } else {
-            window.location.href = '/';
+            window.location.href = '/taipei-trip';
         }
     } catch (e) {
         console.error('Error fetching attraction:', e);
@@ -93,11 +107,11 @@ function minusSlides(n) {
     }
 
     slides.forEach(slide => slide.style.display = "none");
-    dots.forEach(dot => dot.setAttribute('src', '/static/photo_icon/circle.png'));
+    dots.forEach(dot => dot.setAttribute('src', '/taipei-trip/static_taipei_trip/photo_icon/circle.png'));
 
     if (slides[counter - 1] && dots[counter - 1]) {
         slides[counter - 1].style.display = 'block';
-        dots[counter - 1].setAttribute('src', '/static/photo_icon/circle current.png');
+        dots[counter - 1].setAttribute('src', '/taipei-trip/static_taipei_trip/photo_icon/circle current.png');
     }
 
 }
@@ -115,11 +129,11 @@ function plusSlides(n) {
     }
 
     slides.forEach(slide => slide.style.display = "none");
-    dots.forEach(dot => dot.setAttribute('src', '/static/photo_icon/circle.png'));
+    dots.forEach(dot => dot.setAttribute('src', '/taipei-trip/static_taipei_trip/photo_icon/circle.png'));
 
     if (slides[counter - 1] && dots[counter - 1]) {
         slides[counter - 1].style.display = 'block';
-        dots[counter - 1].setAttribute('src', '/static/photo_icon/circle current.png');
+        dots[counter - 1].setAttribute('src', '/taipei-trip/static_taipei_trip/photo_icon/circle current.png');
     }
 }
 
@@ -140,6 +154,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 const fadeElement = document.getElementById('fade-sign-in');
                 fadeElement.classList.add('show');
                 signIn.style.display = 'flex';
+
+                // add default email and password
+                let defaultEmail = document.querySelector('#emailID');
+                defaultEmail.value = 'test@gmail.com';
+                let defaultPassword = document.querySelector('#passwordID');
+                defaultPassword.value = 'testTEST8~';
+
             }
         })
         closeSignIn.addEventListener('click', function(){
@@ -168,7 +189,7 @@ document.addEventListener("DOMContentLoaded", function () {
         async function checkLogin() {
             const token = localStorage.getItem("authToken");
             try {
-                const response = await fetch('/api/user/auth', {
+                const response = await fetch('/taipei-trip/api/user/auth', {
                     method: "GET",
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -233,6 +254,13 @@ document.addEventListener("DOMContentLoaded", function () {
             signIn.style.display = 'flex';
             clearInputValue();
             adjustHeightAll();
+
+            // add default email and password
+            let defaultEmail = document.querySelector('#emailID');
+            defaultEmail.value = 'test@gmail.com';
+            let defaultPassword = document.querySelector('#passwordID');
+            defaultPassword.value = 'testTEST8~';
+
         })
         closeEnroll.addEventListener('click', function() {
             const fadeElement = document.getElementById('fade-sign-in');
@@ -261,7 +289,7 @@ document.addEventListener("DOMContentLoaded", function () {
             let password = document.querySelector('#passwordID');
 
             try {
-                const response = await fetch('/api/user/auth', {
+                const response = await fetch('/taipei-trip/api/user/auth', {
                     method: "PUT",
                     body: JSON.stringify({
                         email: email.value,
@@ -338,7 +366,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             try {
 
-                const response = await fetch('/api/user', {
+                const response = await fetch('/taipei-trip/api/user', {
                     method: "POST",
                     body: JSON.stringify({
                         name: name.value,
@@ -443,8 +471,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 let dotsDot = document.querySelectorAll('.dot');
 
-                dotsDot.forEach(dot => dot.setAttribute('src', '/static/photo_icon/circle.png'));
-                event.target.setAttribute('src', '/static/photo_icon/circle current.png');
+                dotsDot.forEach(dot => dot.setAttribute('src', '/taipei-trip/static_taipei_trip/photo_icon/circle.png'));
+                event.target.setAttribute('src', '/taipei-trip/static_taipei_trip/photo_icon/circle current.png');
 
                 counter = parseInt(event.target.id) + 1;
 
@@ -486,7 +514,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // 回首頁
     let title = document.querySelector('.title');
     title.addEventListener('click', () => {
-        window.location.href = '/';
+        window.location.href = '/taipei-trip';
     })
 
     // click 開始預定行程
@@ -501,7 +529,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // 查看是否登入 
         try {
             const token = localStorage.getItem("authToken");
-            const getResponse = await fetch('/api/user/auth', {
+            const getResponse = await fetch('/taipei-trip/api/user/auth', {
                 method: 'GET',
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -517,6 +545,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 fadeElement.classList.add('show');
                 let signIn = document.querySelector('.pop-background-color-sign-in');
                 signIn.style.display = 'flex';
+
+                // add default email and password
+                let defaultEmail = document.querySelector('#emailID');
+                defaultEmail.value = 'test@gmail.com';
+                let defaultPassword = document.querySelector('#passwordID');
+                defaultPassword.value = 'testTEST8~';
 
             } else { // log in
 
@@ -542,7 +576,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (date != ''){
 
 
-                    const bookingNew = await fetch('/api/booking', {
+                    const bookingNew = await fetch('/taipei-trip/api/booking', {
                         method: 'POST',
                         body: JSON.stringify({
                             attractionId: attractionId,
@@ -560,7 +594,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     if (bookingResult.ok) {
 
-                        window.location.assign('/booking');
+                        window.location.assign('/taipei-trip/booking');
 
                     } else {
 
@@ -599,7 +633,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // 登入驗證
         try {
             const token = localStorage.getItem("authToken");
-            const getResponse = await fetch('/api/user/auth', {
+            const getResponse = await fetch('/taipei-trip/api/user/auth', {
                 method: 'GET',
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -615,6 +649,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 fadeElement.classList.add('show');
                 let signIn = document.querySelector('.pop-background-color-sign-in');
                 signIn.style.display = 'flex';
+
+                // add default email and password
+                let defaultEmail = document.querySelector('#emailID');
+                defaultEmail.value = 'test@gmail.com';
+                let defaultPassword = document.querySelector('#passwordID');
+                defaultPassword.value = 'testTEST8~';
 
             } else { // log in
 

@@ -7,7 +7,7 @@ async function GetOrder() {
             //number = parseInt(number);
             console.log(number);
             let token = localStorage.getItem("authToken");
-            const getResponse = await fetch(`/api/order/${number}`, {
+            const getResponse = await fetch(`/taipei-trip/api/order/${number}`, {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -30,7 +30,7 @@ async function GetOrder() {
 
     } else {
         localStorage.removeItem("authToken");
-        window.location.assign('/');
+        window.location.assign('/taipei-trip');
     }
 
 }
@@ -44,7 +44,7 @@ async function checkLogIn() {
     const token = localStorage.getItem("authToken");
 
     try {
-        const getLogInResponse = await fetch('/api/user/auth', {
+        const getLogInResponse = await fetch('/taipei-trip/api/user/auth', {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         GetOrder();
     } else {
         localStorage.removeItem("authToken");
-        window.location.assign('/');
+        window.location.assign('/taipei-trip');
     }
    
     
@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     let logOut = document.querySelector('#signInEnroll');
     logOut.addEventListener('click', () => {
         localStorage.removeItem("authToken");
-        window.location.assign('/');
+        window.location.assign('/taipei-trip');
     })
 
 
@@ -100,9 +100,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         // check log in or not
         if (!checkLogIn) {
-            window.location.assign('/');
+            window.location.assign('/taipei-trip');
         } else {
-            window.location.assign('/booking');
+            window.location.assign('/taipei-trip/booking');
         }
 
     }))
@@ -110,7 +110,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     // 回首頁
     let title = document.querySelector('.title');
     title.addEventListener('click', () => {
-        window.location.href = '/';
+        window.location.href = '/taipei-trip';
     })
 
 })
