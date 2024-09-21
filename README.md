@@ -23,3 +23,19 @@ Tesing account:
 # Table Schema ERD
 
 ![alt text](readme/taipei_trip_ERD.png)
+
+# Home Page
+
+![alt text](readme/taipei-trip-homepage.png)
+
+# Attraction Page
+
+![alt text](readme/taipei-trip-attraction.png)
+
+# Booking Page
+
+![alt text](readme/taipei-trip-booking.png)
+
+# Order Page
+
+![alt text](readme/taipei-trip-order.png)
