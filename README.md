@@ -5,9 +5,10 @@ It's an e-commerce tourism website focusing on taipei attractions from Taipei Ci
 Use the following techniques:
 1. HTML/CSS/JavaScript
 2. Python FastAPI
-3. Docker
-4. AWS - EC2, RDS, Route53
-5. Nginx
+3. Python pytest
+4. Docker
+5. AWS - EC2, RDS, Route53
+6. Nginx
 
 Website: https://aliceta.cloud/taipei-trip/
 
